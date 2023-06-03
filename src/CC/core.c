@@ -19,7 +19,6 @@ void CC_Core_Update(double delta_time) {
 
     if(CC_GLOBAL_delta_time >= 0.05f) {
         //TODO: Tick world
-        printf("Tick\n");
         CC_GLOBAL_delta_time = 0.0f;
     }
 }

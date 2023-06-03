@@ -61,3 +61,7 @@ void CC_Player_GetOnGround(bool* on_ground) {
 void CC_Player_SetOnGround(bool on_ground) {
     CC_GLOBAL_player_data.on_ground = on_ground;
 }
+
+const PlayerData* CC_Player_GetData(void) {
+    return &CC_GLOBAL_player_data;
+}

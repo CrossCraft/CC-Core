@@ -35,7 +35,7 @@ void CC_World_GetSize(size_t* x, size_t* y, size_t* z) {
     *z = CC_GLOBAL_world_data.z;
 }
 
-WorldData* CC_World_GetData(void) {
+const WorldData* CC_World_GetData(void) {
     return &CC_GLOBAL_world_data;
 }
 
