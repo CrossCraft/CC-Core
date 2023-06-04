@@ -21,6 +21,23 @@ void CC_World_Generate(void) {
             CC_GLOBAL_world_data.blocks[CC_WIDX(x, 0, z, &CC_GLOBAL_world_data)] = BLK_Stone;
         }
     }
+
+
+    for(size_t z = 0; z < CC_GLOBAL_world_data.z; z++) {
+        for(size_t x = 0; x < CC_GLOBAL_world_data.x; x++) {
+            int r = rand() % 4;
+            if(r == 0)
+                CC_GLOBAL_world_data.blocks[CC_WIDX(x, 1, z, &CC_GLOBAL_world_data)] = BLK_Stone;
+        }
+    }
+
+    for(size_t z = 0; z < CC_GLOBAL_world_data.z; z++) {
+        for(size_t x = 0; x < CC_GLOBAL_world_data.x; x++) {
+            int r = rand() % 4;
+            if(r == 0)
+                CC_GLOBAL_world_data.blocks[CC_WIDX(x, 4, z, &CC_GLOBAL_world_data)] = BLK_Stone;
+        }
+    }
 }
 
 void CC_World_GetChunkSize(size_t* x, size_t* y, size_t* z) {
