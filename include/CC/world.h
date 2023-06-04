@@ -1,9 +1,9 @@
 #pragma once
 #include <CC/type.h>
 
-#define CC_WIDX(x, y, z, wData) (   y * (wData)->x * (wData)->z \
-                                    + z * (wData)->x \
-                                    + x)
+#define CC_WIDX(ax, ay, az, wData) (   (ay) * (wData)->x * (wData)->z \
+                                    + (az) * (wData)->x \
+                                    + (ax))
 
 #ifdef __cplusplus
 extern "C" {
