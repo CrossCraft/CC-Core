@@ -59,7 +59,7 @@ void CC_EventQueue_Transfer(CC_Event* in, EventQueue* out) {
     out->tail = (out->tail + 1) % CC_MAX_EVENTS;
 }
 
-#define EVENT_DEBUG 1
+#define EVENT_DEBUG 0
 
 void CC_Event_Handle_InBound_Client(void) {
     CC_Event* event;
