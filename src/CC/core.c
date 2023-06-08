@@ -3,7 +3,10 @@
 
 void CC_Core_Init(void) {
     CC_World_Init(256, 64, 256);
-    CC_World_Generate();
+
+    if(!CC_World_Load()) {
+        CC_World_Generate();
+    }
 
     CC_Player_Init();
 

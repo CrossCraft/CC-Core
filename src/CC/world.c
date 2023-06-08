@@ -3,6 +3,7 @@
 #include <time.h>
 #include <string.h>
 #include <stdio.h>
+#include <zlib.h>
 
 #define FNL_IMPL
 #include <FNL.h>
@@ -218,5 +219,41 @@ bool CC_World_TryGetBlock(size_t x, size_t y, size_t z, block_t* block) {
     }
 
     *block = CC_GLOBAL_world_data.blocks[CC_WIDX(x, y, z, &CC_GLOBAL_world_data)];
+    return true;
+}
+
+
+void CC_World_Save(void) {
+    gzFile file = gzopen("world.dat", "wb");
+    if(file == NULL) {
+        fprintf(stderr, "Failed to open world.dat for writing!\n");
+        return;
+    }
+
+    gzwrite(file, &CC_GLOBAL_world_seed, sizeof(uint32_t));
+    gzwrite(file, &CC_GLOBAL_world_data.x, sizeof(size_t));
+    gzwrite(file, &CC_GLOBAL_world_data.y, sizeof(size_t));
+    gzwrite(file, &CC_GLOBAL_world_data.z, sizeof(size_t));
+    gzwrite(file, CC_GLOBAL_world_data.blocks, sizeof(block_t) * CC_GLOBAL_world_data.x * CC_GLOBAL_world_data.y * CC_GLOBAL_world_data.z);
+
+    gzclose(file);
+}
+
+bool CC_World_Load(void) {
+
+    gzFile file = gzopen("world.dat", "rb");
+    if(file == NULL) {
+        fprintf(stderr, "Failed to open world.dat for reading!\n");
+        return false;
+    }
+
+    gzread(file, &CC_GLOBAL_world_seed, sizeof(uint32_t));
+    gzread(file, &CC_GLOBAL_world_data.x, sizeof(size_t));
+    gzread(file, &CC_GLOBAL_world_data.y, sizeof(size_t));
+    gzread(file, &CC_GLOBAL_world_data.z, sizeof(size_t));
+    gzread(file,  CC_GLOBAL_world_data.blocks, sizeof(block_t) * CC_GLOBAL_world_data.x * CC_GLOBAL_world_data.y * CC_GLOBAL_world_data.z);
+
+    gzclose(file);
+
     return true;
 }
