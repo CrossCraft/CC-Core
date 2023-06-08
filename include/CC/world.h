@@ -20,6 +20,7 @@ void CC_World_GetSize(size_t* x, size_t* y, size_t* z);
 const WorldData* CC_World_GetData(void);
 
 void CC_World_GetBlock(size_t x, size_t y, size_t z, block_t* block);
+bool CC_World_TryGetBlock(size_t x, size_t y, size_t z, block_t* block);
 void CC_World_SetBlock(size_t x, size_t y, size_t z, block_t block);
 
 #ifdef __cplusplus
