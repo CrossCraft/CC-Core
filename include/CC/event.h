@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <CC/type.h>
 
 #if __cplusplus
 extern "C" {
@@ -18,14 +19,27 @@ typedef struct {
 } PlayerUpdateEvent;
 
 typedef enum {
+    SET_BLOCK_MODE_BREAK = 0x00,
+    SET_BLOCK_MODE_PLACE = 0x01,
+} SetBlockMode;
+
+typedef struct {
+    uint16_t x, y, z;
+    SetBlockMode mode;
+    block_t block;
+} SetBlockEvent;
+
+typedef enum {
     CC_EVENT_PLAYER_UPDATE, // This event can go both ways
+    CC_EVENT_SET_BLOCK, // This event can go both ways
 } EventType;
 
 typedef struct {
     EventType type;
     union {
         PlayerUpdateEvent player_update;
-    };
+        SetBlockEvent set_block;
+    } data;
 } CC_Event;
 
 typedef struct {
@@ -43,6 +57,7 @@ void CC_Event_Handle_InBound_Client(void);
 CC_Event* CC_Event_Poll(void);
 
 void CC_Event_Push_PlayerUpdate(uint8_t playerID, float x, float y, float z, float pitch, float yaw, bool on_ground);
+void CC_Event_Push_SetBlock(uint16_t x, uint16_t y, uint16_t z, uint8_t mode, block_t block);
 
 #if __cplusplus
 }

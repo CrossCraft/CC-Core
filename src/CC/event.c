@@ -1,5 +1,6 @@
 #include <CC/event.h>
 #include <CC/player.h>
+#include <CC/world.h>
 #include <string.h>
 #include <stdio.h>
 
@@ -59,7 +60,7 @@ void CC_EventQueue_Transfer(CC_Event* in, EventQueue* out) {
     out->tail = (out->tail + 1) % CC_MAX_EVENTS;
 }
 
-#define EVENT_DEBUG 0
+#define EVENT_DEBUG 1
 
 void CC_Event_Handle_InBound_Client(void) {
     CC_Event* event;
@@ -67,18 +68,23 @@ void CC_Event_Handle_InBound_Client(void) {
     while ((event = CC_Event_Poll_Internal()) != NULL) {
         switch (event->type) {
             case CC_EVENT_PLAYER_UPDATE: {
+                CC_Player_SetPosition(event->data.player_update.x, event->data.player_update.y, event->data.player_update.z);
+                CC_Player_SetRotation(event->data.player_update.pitch, event->data.player_update.yaw);
+                CC_Player_SetOnGround(event->data.player_update.on_ground);
+                break;
+            }
+
+            case CC_EVENT_SET_BLOCK: {
                 #if EVENT_DEBUG
-                printf("EVENT DEBUG: Player Update Event:\n");
-                printf("Player ID: %d\n", event->player_update.playerID);
-                printf("X Y Z: %f %f %f\n", event->player_update.x, event->player_update.y, event->player_update.z);
-                printf("Pitch Yaw: %f %f\n", event->player_update.pitch, event->player_update.yaw);
-                printf("On Ground: %d\n", event->player_update.on_ground);
+                printf("EVENT DEBUG: Set Block Event:\n");
+                printf("X Y Z: %d %d %d\n", event->data.set_block.x, event->data.set_block.y, event->data.set_block.z);
+                printf("Mode: %d\n", event->data.set_block.mode);
+                printf("Block: %d\n", event->data.set_block.block);
                 printf("\n");
                 #endif
 
-                CC_Player_SetPosition(event->player_update.x, event->player_update.y, event->player_update.z);
-                CC_Player_SetRotation(event->player_update.pitch, event->player_update.yaw);
-                CC_Player_SetOnGround(event->player_update.on_ground);
+                CC_World_SetBlock(event->data.set_block.x, event->data.set_block.y, event->data.set_block.z, event->data.set_block.block);
+                CC_EventQueue_Transfer(event, &CC_Event_QueueOut);
                 break;
             }
         }
@@ -89,13 +95,26 @@ void CC_Event_Push_PlayerUpdate(uint8_t playerID, float x, float y, float z, flo
     CC_Event event;
 
     event.type = CC_EVENT_PLAYER_UPDATE;
-    event.player_update.playerID = playerID;
-    event.player_update.x = x;
-    event.player_update.y = y;
-    event.player_update.z = z;
-    event.player_update.pitch = pitch;
-    event.player_update.yaw = yaw;
-    event.player_update.on_ground = on_ground;
+    event.data.player_update.playerID = playerID;
+    event.data.player_update.x = x;
+    event.data.player_update.y = y;
+    event.data.player_update.z = z;
+    event.data.player_update.pitch = pitch;
+    event.data.player_update.yaw = yaw;
+    event.data.player_update.on_ground = on_ground;
+
+    CC_Event_Push(&event);
+}
+
+void CC_Event_Push_SetBlock(uint16_t x, uint16_t y, uint16_t z, uint8_t mode, block_t block) {
+    CC_Event event;
+
+    event.type = CC_EVENT_SET_BLOCK;
+    event.data.set_block.x = x;
+    event.data.set_block.y = y;
+    event.data.set_block.z = z;
+    event.data.set_block.mode = mode;
+    event.data.set_block.block = block;
 
     CC_Event_Push(&event);
 }
