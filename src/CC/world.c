@@ -24,7 +24,7 @@ void CC_World_Init(size_t x, size_t y, size_t z) {
     FNL_GLOBAL_state = fnlCreateState();
     FNL_GLOBAL_state.seed = CC_GLOBAL_world_seed;
     FNL_GLOBAL_state.noise_type = FNL_NOISE_PERLIN;
-    FNL_GLOBAL_state.frequency = 0.04f;
+    FNL_GLOBAL_state.frequency = 0.02f;
 }
 
 void CC_World_Term(void) {
