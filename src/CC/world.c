@@ -63,7 +63,7 @@ void CC_World_Generate(void) {
                     CC_GLOBAL_world_data.blocks[idx] = BLK_Dirt;
                 } else {
                     if(h < 32) {
-                        float determinant = fnlGetNoise2D(&FNL_GLOBAL_state, x, z);
+                        float determinant = fnlGetNoise2D(&FNL_GLOBAL_state, (float)z, (float)x) - 0.0f;
 
                         if(determinant > 0.0f) {
                             CC_GLOBAL_world_data.blocks[idx] = BLK_Gravel;
