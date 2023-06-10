@@ -46,8 +46,9 @@ int16_t CC_Entity_Spawn(CC_Entity* entity) {
     return eid;
 }
 
-void CC_Entity_Destroy(CC_Entity* entity) {
-    CC_GLOBAL_EntityManager.inUse[entity->eid] = false;
+void CC_Entity_Destroy(uint16_t eid) {
+    CC_Entity* entity = &CC_GLOBAL_EntityManager.entities[eid];
+    CC_GLOBAL_EntityManager.inUse[eid] = false;
     free(entity->data);
 }
 

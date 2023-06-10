@@ -20,7 +20,7 @@ void CC_Entity_Init(void);
 void CC_Entity_Term(void);
 
 int16_t CC_Entity_Spawn(CC_Entity* entity);
-void CC_Entity_Destroy(CC_Entity* entity);
+void CC_Entity_Destroy(uint16_t eid);
 
 int16_t CC_Entity_SpawnItem(float x, float y, float z, item_t item, item_t data, uint8_t count);
 

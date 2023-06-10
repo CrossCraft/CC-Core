@@ -62,7 +62,7 @@ void CC_EventQueue_Transfer(CC_Event* in, EventQueue* out) {
     out->tail = (out->tail + 1) % CC_MAX_EVENTS;
 }
 
-#define EVENT_DEBUG 1
+#define EVENT_DEBUG 0
 
 void CC_Event_Handle_InBound_Client(void) {
     CC_Event* event;
@@ -80,6 +80,16 @@ void CC_Event_Handle_InBound_Client(void) {
                 #if EVENT_DEBUG
                 printf("EVENT DEBUG: Spawn Item Event:\n");
                 #endif
+                break;
+            }
+
+            case CC_EVENT_DESTROY_ENTITY: {
+                #if EVENT_DEBUG
+                printf("EVENT DEBUG: Destroy Entity Event:\n");
+                #endif
+
+                CC_Entity_Destroy(event->data.destroy_entity.eid);
+                CC_EventQueue_Transfer(event, &CC_Event_QueueOut);
                 break;
             }
 
@@ -109,8 +119,6 @@ void CC_Event_Handle_InBound_Client(void) {
                         new_event.data.spawn_item.item.data = item_data.data;
                         new_event.data.spawn_item.item.count = item_data.count;
                         CC_EventQueue_Transfer(&new_event, &CC_Event_QueueOut);
-
-                        printf("Spawned item\n");
                     }
                 }
 
@@ -146,6 +154,15 @@ void CC_Event_Push_SetBlock(uint16_t x, uint16_t y, uint16_t z, uint8_t mode, bl
     event.data.set_block.z = z;
     event.data.set_block.mode = mode;
     event.data.set_block.block = block;
+
+    CC_Event_Push(&event);
+}
+
+void CC_Event_Push_DestroyEntity(uint16_t eid) {
+    CC_Event event;
+
+    event.type = CC_EVENT_DESTROY_ENTITY;
+    event.data.destroy_entity.eid = eid;
 
     CC_Event_Push(&event);
 }
