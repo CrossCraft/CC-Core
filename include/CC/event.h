@@ -29,9 +29,16 @@ typedef struct {
     block_t block;
 } SetBlockEvent;
 
+typedef struct {
+    uint16_t eid;
+    float x, y, z;
+    ItemData item;
+} SpawnItemEvent;
+
 typedef enum {
     CC_EVENT_PLAYER_UPDATE, // This event can go both ways
     CC_EVENT_SET_BLOCK, // This event can go both ways
+    CC_EVENT_SPAWN_ITEM, // This event only goes to client
 } EventType;
 
 typedef struct {
@@ -39,6 +46,7 @@ typedef struct {
     union {
         PlayerUpdateEvent player_update;
         SetBlockEvent set_block;
+        SpawnItemEvent spawn_item;
     } data;
 } CC_Event;
 

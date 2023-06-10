@@ -1,6 +1,8 @@
 #include <CC/event.h>
 #include <CC/player.h>
 #include <CC/world.h>
+#include <CC/item.h>
+#include <CC/entity.h>
 #include <string.h>
 #include <stdio.h>
 
@@ -74,6 +76,13 @@ void CC_Event_Handle_InBound_Client(void) {
                 break;
             }
 
+            case CC_EVENT_SPAWN_ITEM: {
+                #if EVENT_DEBUG
+                printf("EVENT DEBUG: Spawn Item Event:\n");
+                #endif
+                break;
+            }
+
             case CC_EVENT_SET_BLOCK: {
                 #if EVENT_DEBUG
                 printf("EVENT DEBUG: Set Block Event:\n");
@@ -82,6 +91,28 @@ void CC_Event_Handle_InBound_Client(void) {
                 printf("Block: %d\n", event->data.set_block.block);
                 printf("\n");
                 #endif
+
+                if(event->data.set_block.mode == SET_BLOCK_MODE_BREAK) {
+                    // Check to see if we can spawn an item
+                    block_t block;
+                    CC_World_GetBlock(event->data.set_block.x, event->data.set_block.y, event->data.set_block.z, &block);
+                    ItemData item_data = CC_Item_Lookup_Block_Drop(block);
+
+                    if(item_data.count > 0) {
+                        CC_Event new_event;
+                        new_event.type = CC_EVENT_SPAWN_ITEM;
+                        new_event.data.spawn_item.eid = CC_Entity_SpawnItem(event->data.set_block.x, event->data.set_block.y, event->data.set_block.z, item_data.id, item_data.data, item_data.count);
+                        new_event.data.spawn_item.x = event->data.set_block.x + 0.5f;
+                        new_event.data.spawn_item.y = event->data.set_block.y + 0.5f;
+                        new_event.data.spawn_item.z = event->data.set_block.z + 0.5f;
+                        new_event.data.spawn_item.item.id = item_data.id;
+                        new_event.data.spawn_item.item.data = item_data.data;
+                        new_event.data.spawn_item.item.count = item_data.count;
+                        CC_EventQueue_Transfer(&new_event, &CC_Event_QueueOut);
+
+                        printf("Spawned item\n");
+                    }
+                }
 
                 CC_World_SetBlock(event->data.set_block.x, event->data.set_block.y, event->data.set_block.z, event->data.set_block.block);
                 CC_EventQueue_Transfer(event, &CC_Event_QueueOut);
