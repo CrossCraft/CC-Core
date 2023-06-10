@@ -39,11 +39,16 @@ typedef struct {
     uint16_t eid;
 } DestroyEntityEvent;
 
+typedef struct {
+    uint16_t health;
+} SetPlayerHealthEvent;
+
 typedef enum {
     CC_EVENT_PLAYER_UPDATE, // This event can go both ways
     CC_EVENT_SET_BLOCK, // This event can go both ways
     CC_EVENT_SPAWN_ITEM, // This event only goes to client
     CC_EVENT_DESTROY_ENTITY, // This event can go both ways
+    CC_EVENT_SET_PLAYER_HEALTH, // This event only goes to client
 } EventType;
 
 typedef struct {
@@ -53,6 +58,7 @@ typedef struct {
         SetBlockEvent set_block;
         SpawnItemEvent spawn_item;
         DestroyEntityEvent destroy_entity;
+        SetPlayerHealthEvent set_player_health;
     } data;
 } CC_Event;
 
@@ -73,6 +79,7 @@ CC_Event* CC_Event_Poll(void);
 void CC_Event_Push_PlayerUpdate(uint8_t playerID, float x, float y, float z, float pitch, float yaw, bool on_ground);
 void CC_Event_Push_SetBlock(uint16_t x, uint16_t y, uint16_t z, uint8_t mode, block_t block);
 void CC_Event_Push_DestroyEntity(uint16_t eid);
+void CC_Event_Push_SetPlayerHealth(uint16_t health);
 
 #if __cplusplus
 }

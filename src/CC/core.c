@@ -8,9 +8,9 @@ void CC_Core_Init(void) {
         CC_World_Generate();
     }
 
-    CC_Player_Init();
-
     CC_Event_Init();
+
+    CC_Player_Init();
 }
 
 static float CC_GLOBAL_delta_time = 0.0f;

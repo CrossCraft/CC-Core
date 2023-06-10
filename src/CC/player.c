@@ -1,5 +1,5 @@
 #include <CC/player.h>
-
+#include <CC/event.h>
 static PlayerData CC_GLOBAL_player_data;
 
 void CC_Player_Init(void) {
@@ -14,6 +14,11 @@ void CC_Player_Init(void) {
     CC_GLOBAL_player_data.yaw = 0.0f;
 
     CC_GLOBAL_player_data.on_ground = false;
+
+    CC_GLOBAL_player_data.health = 20;
+    CC_GLOBAL_player_data.air = 300;
+
+    CC_Event_Push_SetPlayerHealth(CC_GLOBAL_player_data.health);
 }
 
 void CC_Player_Term(void) {

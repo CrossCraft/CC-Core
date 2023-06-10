@@ -83,6 +83,13 @@ void CC_Event_Handle_InBound_Client(void) {
                 break;
             }
 
+            case CC_EVENT_SET_PLAYER_HEALTH: {
+                #if EVENT_DEBUG
+                printf("EVENT DEBUG: Set Player Health Event:\n");
+                #endif
+                break;
+            }
+
             case CC_EVENT_DESTROY_ENTITY: {
                 #if EVENT_DEBUG
                 printf("EVENT DEBUG: Destroy Entity Event:\n");
@@ -165,4 +172,13 @@ void CC_Event_Push_DestroyEntity(uint16_t eid) {
     event.data.destroy_entity.eid = eid;
 
     CC_Event_Push(&event);
+}
+
+void CC_Event_Push_SetPlayerHealth(uint16_t health) {
+    CC_Event event;
+
+    event.type = CC_EVENT_SET_PLAYER_HEALTH;
+    event.data.set_player_health.health = health;
+
+    CC_EventQueue_Transfer(&event, &CC_Event_QueueOut);
 }
