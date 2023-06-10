@@ -88,9 +88,9 @@ void CC_Entity_CheckCollide(uint16_t eid, double dt) {
     float y = entity->y + entity->vy * dt;
     float z = entity->z + entity->vz * dt;
 
-    int x0 = (int)(x - 0.5f);
+    int x0 = (int)(x);
     int y0 = (int)(y - 0.5f);
-    int z0 = (int)(z - 0.5f);
+    int z0 = (int)(z);
 
     if(CheckCollideAxis(x0, entity->y, entity->z)) {
         entity->vx = 0;
