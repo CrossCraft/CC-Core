@@ -5,6 +5,7 @@
 #include <CC/entity.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 // "In" inside of this context is when the game pushes to the server library
 // "Out" inside of this context is when the client will poll from the server library
@@ -64,6 +65,10 @@ void CC_EventQueue_Transfer(CC_Event* in, EventQueue* out) {
 
 #define EVENT_DEBUG 0
 
+float randFloat(void) {
+    return ( (float)rand() / (float)RAND_MAX) * 2.0f - 1.0f;
+}
+
 void CC_Event_Handle_InBound_Client(void) {
     CC_Event* event;
 
@@ -79,6 +84,13 @@ void CC_Event_Handle_InBound_Client(void) {
             case CC_EVENT_SPAWN_ITEM: {
                 #if EVENT_DEBUG
                 printf("EVENT DEBUG: Spawn Item Event:\n");
+                #endif
+                break;
+            }
+
+            case CC_EVENT_ENTITY_TELEPORT: {
+                #if EVENT_DEBUG
+                printf("EVENT DEBUG: Entity Teleport Event:\n");
                 #endif
                 break;
             }
@@ -118,10 +130,17 @@ void CC_Event_Handle_InBound_Client(void) {
                     if(item_data.count > 0) {
                         CC_Event new_event;
                         new_event.type = CC_EVENT_SPAWN_ITEM;
-                        new_event.data.spawn_item.eid = CC_Entity_SpawnItem(event->data.set_block.x, event->data.set_block.y, event->data.set_block.z, item_data.id, item_data.data, item_data.count);
+                        float vx = randFloat() * 2.0f;
+                        float vy = randFloat() + 2.5f;
+                        float vz = randFloat() * 2.0f;
+
+                        new_event.data.spawn_item.eid = CC_Entity_SpawnItem(event->data.set_block.x, event->data.set_block.y, event->data.set_block.z, vx, vy, vz, item_data.id, item_data.data, item_data.count);
                         new_event.data.spawn_item.x = event->data.set_block.x + 0.5f;
                         new_event.data.spawn_item.y = event->data.set_block.y + 0.5f;
                         new_event.data.spawn_item.z = event->data.set_block.z + 0.5f;
+                        new_event.data.spawn_item.vx = vx;
+                        new_event.data.spawn_item.vy = vy;
+                        new_event.data.spawn_item.vz = vz;
                         new_event.data.spawn_item.item.id = item_data.id;
                         new_event.data.spawn_item.item.data = item_data.data;
                         new_event.data.spawn_item.item.count = item_data.count;
@@ -135,6 +154,21 @@ void CC_Event_Handle_InBound_Client(void) {
             }
         }
     }
+}
+
+void CC_Event_Push_EntityTeleport(uint16_t eid, float x, float y, float z, float vx, float vy, float vz, float pitch, float yaw) {
+    CC_Event event;
+    event.type = CC_EVENT_ENTITY_TELEPORT;
+    event.data.entity_teleport.eid = eid;
+    event.data.entity_teleport.x = x;
+    event.data.entity_teleport.y = y;
+    event.data.entity_teleport.z = z;
+    event.data.entity_teleport.vx = vx;
+    event.data.entity_teleport.vy = vy;
+    event.data.entity_teleport.vz = vz;
+    event.data.entity_teleport.pitch = pitch;
+    event.data.entity_teleport.yaw = yaw;
+    CC_EventQueue_Transfer(&event, &CC_Event_QueueOut);
 }
 
 void CC_Event_Push_PlayerUpdate(uint8_t playerID, float x, float y, float z, float pitch, float yaw, bool on_ground) {

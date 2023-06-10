@@ -1,5 +1,7 @@
 #include <CC/entity.h>
 #include <stdlib.h>
+#include <CC/event.h>
+#include <CC/world.h>
 
 #define MAX_ENTITIES 1024
 
@@ -52,12 +54,15 @@ void CC_Entity_Destroy(uint16_t eid) {
     free(entity->data);
 }
 
-int16_t CC_Entity_SpawnItem(float x, float y, float z, item_t item, item_t data, uint8_t count) {
+int16_t CC_Entity_SpawnItem(float x, float y, float z, float vx, float vy, float vz, item_t item, item_t data, uint8_t count) {
     CC_Entity entity;
     entity.type = Item;
     entity.x = x + 0.5f;
     entity.y = y + 0.5f;
     entity.z = z + 0.5f;
+    entity.vx = vx;
+    entity.vy = vy;
+    entity.vz = vz;
     entity.pitch = 0;
     entity.yaw = 0;
     entity.data = malloc(sizeof(ItemData));
@@ -65,4 +70,75 @@ int16_t CC_Entity_SpawnItem(float x, float y, float z, item_t item, item_t data,
     ((ItemData*)entity.data)->data = data;
     ((ItemData*)entity.data)->count = count;
     return CC_Entity_Spawn(&entity);
+}
+
+bool CheckCollideAxis(int x, int y, int z) {
+    block_t block;
+    if (CC_World_TryGetBlock(x, y, z, &block)) {
+        return block != BLK_Air && block != BLK_Water;
+    }
+
+    return false;
+}
+
+void CC_Entity_CheckCollide(uint16_t eid, double dt) {
+    CC_Entity* entity = &CC_GLOBAL_EntityManager.entities[eid];
+
+    float x = entity->x + entity->vx * dt;
+    float y = entity->y + entity->vy * dt;
+    float z = entity->z + entity->vz * dt;
+
+    int x0 = (int)(x - 0.5f);
+    int y0 = (int)(y - 0.5f);
+    int z0 = (int)(z - 0.5f);
+
+    if(CheckCollideAxis(x0, entity->y, entity->z)) {
+        entity->vx = 0;
+    }
+
+    if(CheckCollideAxis(entity->x, y0, entity->z)) {
+        entity->vy = 0;
+    }
+
+    if(CheckCollideAxis(entity->x, entity->y, z0)) {
+        entity->vz = 0;
+    }
+
+    if(CheckCollideAxis(entity->x, entity->y, entity->z)) {
+        entity->vx = 0;
+        entity->vz = 0;
+    }
+}
+
+float entityTickTimer = 0.0f;
+void CC_Entity_Update(double dt) {
+    entityTickTimer += dt;
+
+    if(entityTickTimer < 0.05f) {
+        return;
+    }
+    entityTickTimer = 0.0f;
+
+    for (int i = 0; i < MAX_ENTITIES; i++) {
+        if (CC_GLOBAL_EntityManager.inUse[i]) {
+            CC_Entity* entity = &CC_GLOBAL_EntityManager.entities[i];
+            switch (entity->type) {
+                case Item: {
+                    // Check collisions
+                    CC_Entity_CheckCollide(entity->eid, 0.05f);
+
+                    entity->x += entity->vx * 0.05f;
+                    entity->y += entity->vy * 0.05f;
+                    entity->z += entity->vz * 0.05f;
+
+                    entity->vy -= 16.0f * 0.05f;
+                    entity->vx *= 0.9f;
+                    entity->vz *= 0.9f;
+
+                    CC_Event_Push_EntityTeleport(entity->eid, entity->x, entity->y, entity->z, entity->vx, entity->vy, entity->vz, entity->pitch, entity->yaw);
+                    break;
+                }
+            }
+        }
+    }
 }

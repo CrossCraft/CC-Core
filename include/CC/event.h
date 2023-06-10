@@ -32,6 +32,7 @@ typedef struct {
 typedef struct {
     uint16_t eid;
     float x, y, z;
+    float vx, vy, vz;
     ItemData item;
 } SpawnItemEvent;
 
@@ -43,12 +44,20 @@ typedef struct {
     int16_t health;
 } SetPlayerHealthEvent;
 
+typedef struct {
+    uint16_t eid;
+    float x, y, z;
+    float vx, vy, vz;
+    float pitch, yaw;
+} EntityTeleportEvent;
+
 typedef enum {
     CC_EVENT_PLAYER_UPDATE, // This event can go both ways
     CC_EVENT_SET_BLOCK, // This event can go both ways
     CC_EVENT_SPAWN_ITEM, // This event only goes to client
     CC_EVENT_DESTROY_ENTITY, // This event can go both ways
     CC_EVENT_SET_PLAYER_HEALTH, // This event only goes to client
+    CC_EVENT_ENTITY_TELEPORT, // This event only goes to client
 } EventType;
 
 typedef struct {
@@ -59,6 +68,7 @@ typedef struct {
         SpawnItemEvent spawn_item;
         DestroyEntityEvent destroy_entity;
         SetPlayerHealthEvent set_player_health;
+        EntityTeleportEvent entity_teleport;
     } data;
 } CC_Event;
 
@@ -80,6 +90,7 @@ void CC_Event_Push_PlayerUpdate(uint8_t playerID, float x, float y, float z, flo
 void CC_Event_Push_SetBlock(uint16_t x, uint16_t y, uint16_t z, uint8_t mode, block_t block);
 void CC_Event_Push_DestroyEntity(uint16_t eid);
 void CC_Event_Push_SetPlayerHealth(uint16_t health);
+void CC_Event_Push_EntityTeleport(uint16_t eid, float x, float y, float z, float vx, float vy, float vz, float pitch, float yaw);
 
 #if __cplusplus
 }

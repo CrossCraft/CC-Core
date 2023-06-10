@@ -1,4 +1,5 @@
 #include <CC/core.h>
+#include <CC/entity.h>
 #include <stdio.h>
 
 void CC_Core_Init(void) {
@@ -19,6 +20,8 @@ void CC_Core_Update(double delta_time) {
     CC_Event_Handle_InBound_Client();
 
     CC_GLOBAL_delta_time += (float)delta_time;
+
+    CC_Entity_Update(delta_time);
 
     if(CC_GLOBAL_delta_time >= 0.05f) {
         CC_Player_Update();
