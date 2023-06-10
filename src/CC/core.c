@@ -21,7 +21,7 @@ void CC_Core_Update(double delta_time) {
     CC_GLOBAL_delta_time += (float)delta_time;
 
     if(CC_GLOBAL_delta_time >= 0.05f) {
-        //TODO: Tick world
+        CC_Player_Update();
         CC_GLOBAL_delta_time = 0.0f;
     }
 }

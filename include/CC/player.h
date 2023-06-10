@@ -10,6 +10,8 @@ extern "C" {
 void CC_Player_Init(void);
 void CC_Player_Term(void);
 
+void CC_Player_Update(void);
+
 void CC_Player_GetPosition(float* x, float* y, float* z);
 void CC_Player_SetPosition(float x, float y, float z);
 

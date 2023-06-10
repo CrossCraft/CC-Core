@@ -1,5 +1,8 @@
 #include <CC/player.h>
 #include <CC/event.h>
+#include <stdio.h>
+#include <CC/world.h>
+
 static PlayerData CC_GLOBAL_player_data;
 
 void CC_Player_Init(void) {
@@ -69,4 +72,60 @@ void CC_Player_SetOnGround(bool on_ground) {
 
 const PlayerData* CC_Player_GetData(void) {
     return &CC_GLOBAL_player_data;
+}
+
+float last_height_on_ground = 0.0f;
+void CC_Player_Check_FallDamage(void) {
+    if(CC_GLOBAL_player_data.on_ground) {
+        float new_height = CC_GLOBAL_player_data.y;
+
+        float difference = last_height_on_ground - new_height;
+        if(difference > 3.0f) {
+            block_t foot_block;
+            bool success = CC_World_TryGetBlock(CC_GLOBAL_player_data.x, CC_GLOBAL_player_data.y - 1.8f, CC_GLOBAL_player_data.z, &foot_block);
+
+            if(success) {
+                if(foot_block != BLK_Water) {
+                    CC_GLOBAL_player_data.health -= (difference - 3.0f);
+
+                    if(CC_GLOBAL_player_data.health <= 0) {
+                        //CC_Event_Push_PlayerDeath();
+                    }
+                    CC_Event_Push_SetPlayerHealth(CC_GLOBAL_player_data.health);
+                }
+            }
+        }
+
+        last_height_on_ground = new_height;
+    }
+}
+
+void CC_Player_Check_Drown(void) {
+    block_t head_block;
+    bool success = CC_World_TryGetBlock(CC_GLOBAL_player_data.x, CC_GLOBAL_player_data.y + 1.8f, CC_GLOBAL_player_data.z, &head_block);
+
+    if(success) {
+        if(head_block == BLK_Water) {
+            CC_GLOBAL_player_data.air -= 1;
+            if(CC_GLOBAL_player_data.air <= 0) {
+                CC_GLOBAL_player_data.health -= 2;
+                CC_GLOBAL_player_data.air = 30;
+
+                if(CC_GLOBAL_player_data.health <= 0) {
+                    //CC_Event_Push_PlayerDeath();
+                }
+
+                CC_Event_Push_SetPlayerHealth(CC_GLOBAL_player_data.health);
+            }
+        } else {
+            CC_GLOBAL_player_data.air = 300;
+        }
+    }
+}
+
+void CC_Player_Update(void) {
+    CC_Player_Check_Drown();
+
+    // Fall Damage Check
+    CC_Player_Check_FallDamage();
 }

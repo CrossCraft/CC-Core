@@ -37,8 +37,8 @@ typedef struct {
     float pitch, yaw;
     bool on_ground;
 
-    uint16_t health;
-    uint16_t air;
+    int16_t health;
+    int16_t air;
 } PlayerData;
 
 // Constants for block types

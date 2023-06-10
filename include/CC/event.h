@@ -40,7 +40,7 @@ typedef struct {
 } DestroyEntityEvent;
 
 typedef struct {
-    uint16_t health;
+    int16_t health;
 } SetPlayerHealthEvent;
 
 typedef enum {
