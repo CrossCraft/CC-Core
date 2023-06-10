@@ -132,8 +132,8 @@ void CC_Entity_Update(double dt) {
                     entity->z += entity->vz * 0.05f;
 
                     entity->vy -= 16.0f * 0.05f;
-                    entity->vx *= 0.9f;
-                    entity->vz *= 0.9f;
+                    entity->vx *= 0.85f;
+                    entity->vz *= 0.85f;
 
                     CC_Event_Push_EntityTeleport(entity->eid, entity->x, entity->y, entity->z, entity->vx, entity->vy, entity->vz, entity->pitch, entity->yaw);
                     break;

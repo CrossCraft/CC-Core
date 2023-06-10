@@ -9,6 +9,11 @@ ItemData CC_Item_Lookup_Block_Drop(block_t block) {
     if(block == BLK_Grass) {
         item.id = BLK_Dirt;
         item.count = 1;
+    } else if(block == BLK_Stone || block == BLK_Leaves) {
+        return item;
+    } else {
+        item.id = block;
+        item.count = 1;
     }
 
     return item;
