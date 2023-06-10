@@ -85,6 +85,7 @@ void CC_Event_Handle_InBound_Client(void) {
                 #if EVENT_DEBUG
                 printf("EVENT DEBUG: Spawn Item Event:\n");
                 #endif
+                CC_EventQueue_Transfer(event, &CC_Event_QueueOut);
                 break;
             }
 
@@ -154,6 +155,24 @@ void CC_Event_Handle_InBound_Client(void) {
             }
         }
     }
+}
+
+void CC_Event_Push_SpawnItem(ItemData item_data, float x, float y, float z, float vx, float vy, float vz) {
+    CC_Event new_event;
+    new_event.type = CC_EVENT_SPAWN_ITEM;
+
+    new_event.data.spawn_item.eid = CC_Entity_SpawnItem(x, y, z, vx, vy, vz, item_data.id, item_data.data, item_data.count);
+    new_event.data.spawn_item.x = x + 0.5f;
+    new_event.data.spawn_item.y = y + 0.5f;
+    new_event.data.spawn_item.z = z + 0.5f;
+    new_event.data.spawn_item.vx = vx;
+    new_event.data.spawn_item.vy = vy;
+    new_event.data.spawn_item.vz = vz;
+    new_event.data.spawn_item.item.id = item_data.id;
+    new_event.data.spawn_item.item.data = item_data.data;
+    new_event.data.spawn_item.item.count = item_data.count;
+    printf("Spawn Item: %d %d %d\n", new_event.data.spawn_item.eid, item_data.id, item_data.count);
+    CC_Event_Push(&new_event);
 }
 
 void CC_Event_Push_EntityTeleport(uint16_t eid, float x, float y, float z, float vx, float vy, float vz, float pitch, float yaw) {

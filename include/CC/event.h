@@ -91,6 +91,7 @@ void CC_Event_Push_SetBlock(uint16_t x, uint16_t y, uint16_t z, uint8_t mode, bl
 void CC_Event_Push_DestroyEntity(uint16_t eid);
 void CC_Event_Push_SetPlayerHealth(uint16_t health);
 void CC_Event_Push_EntityTeleport(uint16_t eid, float x, float y, float z, float vx, float vy, float vz, float pitch, float yaw);
+void CC_Event_Push_SpawnItem(ItemData item_data, float x, float y, float z, float vx, float vy, float vz);
 
 #if __cplusplus
 }
