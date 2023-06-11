@@ -1,1 +1,1 @@
-# CC-CoreR
+# CC-Core
