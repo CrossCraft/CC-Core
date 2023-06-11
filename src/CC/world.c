@@ -88,14 +88,14 @@ void growTree(int x, int y, int z, int height) {
 void CC_World_Make_Tree(size_t ix, size_t iy, size_t iz) {
     int tree_height = 4 + rand() % 3;
 
-    int lowx = ix - 2;
-    int lowz = iz - 2;
-    int highx = ix + 2;
-    int highz = iz + 2;
+    int low_x = ix - 2;
+    int low_z = iz - 2;
+    int high_x = ix + 2;
+    int high_z = iz + 2;
 
     // Check if there is enough space for the tree
-    for(int x = lowx; x <= highx; x++) {
-        for(int z = lowz; z <= highz; z++) {
+    for(int x = low_x; x <= high_x; x++) {
+        for(int z = low_z; z <= high_z; z++) {
             for(int y = iy; y < (int)(iy + tree_height); y++) {
                 block_t block;
                 CC_World_GetBlock(x, y, z, &block);

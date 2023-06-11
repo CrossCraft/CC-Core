@@ -46,7 +46,7 @@ const block_t BLK_Crafting_Table = 58;
 const block_t BLK_Wheat = 59;
 const block_t BLK_Farmland = 60;
 const block_t BLK_Furnace = 61;
-const block_t BLK_Furncae_Lit = 62;
+const block_t BLK_Furnace_Lit = 62;
 
 const item_t ITM_Iron_Shovel = 256;
 const item_t ITM_Iron_Pickaxe = 257;

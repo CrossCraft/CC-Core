@@ -88,7 +88,7 @@ extern const block_t BLK_Crafting_Table;
 extern const block_t BLK_Wheat;
 extern const block_t BLK_Farmland;
 extern const block_t BLK_Furnace;
-extern const block_t BLK_Furncae_Lit;
+extern const block_t BLK_Furnace_Lit;
 
 extern const item_t ITM_Iron_Shovel;
 extern const item_t ITM_Iron_Pickaxe;
