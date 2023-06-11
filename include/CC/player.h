@@ -24,6 +24,8 @@ void CC_Player_SetVelocity(float x, float y, float z);
 void CC_Player_GetOnGround(bool* on_ground);
 void CC_Player_SetOnGround(bool on_ground);
 
+void CC_Player_Respawn(void);
+
 const PlayerData* CC_Player_GetData(void);
 
 #if __cplusplus

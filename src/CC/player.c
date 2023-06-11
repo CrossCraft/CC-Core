@@ -4,24 +4,10 @@
 #include <CC/world.h>
 
 static PlayerData CC_GLOBAL_player_data;
+static bool CC_Is_First_Spawn = true;
 
 void CC_Player_Init(void) {
-    CC_GLOBAL_player_data.x = 0.0f;
-    CC_GLOBAL_player_data.y = 0.0f;
-    CC_GLOBAL_player_data.z = 0.0f;
-    CC_GLOBAL_player_data.vx = 0.0f;
-    CC_GLOBAL_player_data.vy = 0.0f;
-    CC_GLOBAL_player_data.vz = 0.0f;
-
-    CC_GLOBAL_player_data.pitch = 0.0f;
-    CC_GLOBAL_player_data.yaw = 0.0f;
-
-    CC_GLOBAL_player_data.on_ground = false;
-
-    CC_GLOBAL_player_data.health = 20;
-    CC_GLOBAL_player_data.air = 300;
-
-    CC_Event_Push_SetPlayerHealth(CC_GLOBAL_player_data.health);
+    CC_Player_Respawn();
 }
 
 void CC_Player_Term(void) {
@@ -89,7 +75,7 @@ void CC_Player_Check_FallDamage(void) {
                     CC_GLOBAL_player_data.health -= (difference - 3.0f);
 
                     if(CC_GLOBAL_player_data.health <= 0) {
-                        //CC_Event_Push_PlayerDeath();
+                        CC_GLOBAL_player_data.health = 0;
                     }
                     CC_Event_Push_SetPlayerHealth(CC_GLOBAL_player_data.health);
                 }
@@ -112,7 +98,7 @@ void CC_Player_Check_Drown(void) {
                 CC_GLOBAL_player_data.air = 30;
 
                 if(CC_GLOBAL_player_data.health <= 0) {
-                    //CC_Event_Push_PlayerDeath();
+                    CC_GLOBAL_player_data.health = 0;
                 }
 
                 CC_Event_Push_SetPlayerHealth(CC_GLOBAL_player_data.health);
@@ -128,4 +114,29 @@ void CC_Player_Update(void) {
 
     // Fall Damage Check
     CC_Player_Check_FallDamage();
+}
+
+void CC_Player_Respawn(void) {
+    CC_GLOBAL_player_data.x = 0.0f;
+    CC_GLOBAL_player_data.y = 0.0f;
+    CC_GLOBAL_player_data.z = 0.0f;
+    CC_GLOBAL_player_data.vx = 0.0f;
+    CC_GLOBAL_player_data.vy = 0.0f;
+    CC_GLOBAL_player_data.vz = 0.0f;
+
+    CC_GLOBAL_player_data.pitch = 0.0f;
+    CC_GLOBAL_player_data.yaw = 0.0f;
+
+    CC_GLOBAL_player_data.on_ground = false;
+
+    CC_GLOBAL_player_data.health = 20;
+    CC_GLOBAL_player_data.air = 300;
+
+    CC_Event_Push_SetPlayerHealth(CC_GLOBAL_player_data.health);
+
+    if(CC_Is_First_Spawn) {
+        CC_Is_First_Spawn = false;
+    } else {
+        CC_Event_Push_PlayerUpdate(255, CC_GLOBAL_player_data.x, CC_GLOBAL_player_data.y, CC_GLOBAL_player_data.z, CC_GLOBAL_player_data.pitch, CC_GLOBAL_player_data.yaw, CC_GLOBAL_player_data.on_ground);
+    }
 }

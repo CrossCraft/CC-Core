@@ -113,6 +113,16 @@ void CC_Event_Handle_InBound_Client(void) {
                 break;
             }
 
+            case CC_EVENT_PLAYER_RESPAWN: {
+                #if EVENT_DEBUG
+                printf("EVENT DEBUG: Player Respawn Event:\n");
+                #endif
+
+                CC_Player_Respawn();
+
+                break;
+            }
+
             case CC_EVENT_SET_BLOCK: {
                 #if EVENT_DEBUG
                 printf("EVENT DEBUG: Set Block Event:\n");
@@ -234,4 +244,12 @@ void CC_Event_Push_SetPlayerHealth(uint16_t health) {
     event.data.set_player_health.health = health;
 
     CC_EventQueue_Transfer(&event, &CC_Event_QueueOut);
+}
+
+void CC_Event_Push_PlayerRespawn(void) {
+    CC_Event event;
+
+    event.type = CC_EVENT_PLAYER_RESPAWN;
+
+    CC_Event_Push(&event);
 }

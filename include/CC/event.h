@@ -51,6 +51,10 @@ typedef struct {
     float pitch, yaw;
 } EntityTeleportEvent;
 
+typedef struct {
+    void* data;
+} PlayerRespawnEvent;
+
 typedef enum {
     CC_EVENT_PLAYER_UPDATE, // This event can go both ways
     CC_EVENT_SET_BLOCK, // This event can go both ways
@@ -58,6 +62,7 @@ typedef enum {
     CC_EVENT_DESTROY_ENTITY, // This event can go both ways
     CC_EVENT_SET_PLAYER_HEALTH, // This event only goes to client
     CC_EVENT_ENTITY_TELEPORT, // This event only goes to client
+    CC_EVENT_PLAYER_RESPAWN, // This event only goes to core
 } EventType;
 
 typedef struct {
@@ -69,6 +74,7 @@ typedef struct {
         DestroyEntityEvent destroy_entity;
         SetPlayerHealthEvent set_player_health;
         EntityTeleportEvent entity_teleport;
+        PlayerRespawnEvent player_respawn;
     } data;
 } CC_Event;
 
@@ -92,6 +98,7 @@ void CC_Event_Push_DestroyEntity(uint16_t eid);
 void CC_Event_Push_SetPlayerHealth(uint16_t health);
 void CC_Event_Push_EntityTeleport(uint16_t eid, float x, float y, float z, float vx, float vy, float vz, float pitch, float yaw);
 void CC_Event_Push_SpawnItem(ItemData item_data, float x, float y, float z, float vx, float vy, float vz);
+void CC_Event_Push_PlayerRespawn(void);
 
 #if __cplusplus
 }
