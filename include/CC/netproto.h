@@ -628,11 +628,6 @@ typedef struct {
     net_string reason;
 } KickSC;
 
-/*
-    CC_PACKET_TYPE_TILE_ENTITY = 0x3B,
-    CC_PACKET_TYPE_EXPLOSION = 0x3C,
- */
-
 #ifdef __cplusplus
 };
 #endif
