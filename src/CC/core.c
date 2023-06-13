@@ -1,5 +1,6 @@
 #include <CC/core.h>
 #include <CC/entity.h>
+#include <CC/netproto.h>
 #include <stdio.h>
 
 void CC_Core_Init(void) {

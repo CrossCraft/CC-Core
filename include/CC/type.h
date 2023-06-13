@@ -13,9 +13,9 @@ typedef uint16_t item_t;
 
 // Item data structure
 typedef struct {
-    item_t id;
-    item_t data;
-    uint8_t count;
+    int16_t item_id;
+    int8_t count;
+    int16_t damage;
 } ItemData;
 
 // Slot Data Structure
@@ -40,6 +40,17 @@ typedef struct {
     int16_t health;
     int16_t air;
 } PlayerData;
+
+typedef enum {
+    CC_OBJECT_TYPE_BOAT,
+    CC_OBJECT_TYPE_MINECART,
+    CC_OBJECT_TYPE_MINECART_CHEST,
+    CC_OBJECT_TYPE_MINECART_FURNACE,
+    CC_OBJECT_TYPE_PRIMED_TNT,
+    CC_OBJECT_TYPE_ARROW,
+    CC_OBJECT_TYPE_SNOWBALL,
+    CC_OBJECT_TYPE_FISHING_BOB
+} ObjectType;
 
 // Constants for block types
 extern const block_t BLK_Air;
@@ -169,7 +180,58 @@ extern const uint32_t LIGHT_SIDE_X_DARK;
 extern const uint32_t LIGHT_SIDE_Z_DARK;
 extern const uint32_t LIGHT_BOT_DARK;
 
+/**
+ * @brief Block face direction
+ */
+typedef enum {
+    CC_FACE_NEGATIVE_Y = 0,
+    CC_FACE_POSITIVE_Y = 1,
+    CC_FACE_NEGATIVE_Z = 2,
+    CC_FACE_POSITIVE_Z = 3,
+    CC_FACE_NEGATIVE_X = 4,
+    CC_FACE_POSITIVE_X = 5
+} FaceDirection;
 
+/**
+ * @brief Block breaking status
+ *
+ * @details
+ * 0: Break start on a block
+ * 1: Break progress
+ * 2: Break aborted
+ * 3: Break finished
+ */
+typedef enum {
+    BREAK_START = 0,
+    BREAK_DIG = 1,
+    BREAK_ABORT = 2,
+    BREAK_FINISH = 3,
+} BlockBreakingStatus;
+
+/**
+ *
+ */
+typedef enum {
+    CC_MOB_TYPE_CREEPER,
+    CC_MOB_TYPE_SKELETON,
+    CC_MOB_TYPE_SPIDER,
+    CC_MOB_TYPE_GIANT,
+    CC_MOB_TYPE_ZOMBIE,
+    CC_MOB_TYPE_SLIME,
+    CC_MOB_TYPE_GHAST,
+    CC_MOB_TYPE_ZOMBIE_PIGMAN,
+    CC_MOB_TYPE_PIG,
+    CC_MOB_TYPE_SHEEP,
+    CC_MOB_TYPE_COW,
+    CC_MOB_TYPE_CHICKEN,
+} MobTypes;
+
+typedef enum {
+    CC_ENTITY_STATUS_DAMAGE = 2,
+    CC_ENTITY_STATUS_DEATH_ANIMATION = 3,
+    CC_ENTITY_STATUS_PRIMED_TNT = 4,
+    CC_ENTITY_STATUS_NOT_PRIMED_TNT = 5
+} EntityStatuses;
 
 #ifdef __cplusplus
 }
