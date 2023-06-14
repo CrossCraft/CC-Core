@@ -66,8 +66,8 @@ int16_t CC_Entity_SpawnItem(float x, float y, float z, float vx, float vy, float
     entity.pitch = 0;
     entity.yaw = 0;
     entity.data = malloc(sizeof(ItemData));
-    ((ItemData*)entity.data)->id = item;
-    ((ItemData*)entity.data)->data = data;
+    ((ItemData*)entity.data)->item_id = item;
+    ((ItemData*)entity.data)->damage = data;
     ((ItemData*)entity.data)->count = count;
     return CC_Entity_Spawn(&entity);
 }
