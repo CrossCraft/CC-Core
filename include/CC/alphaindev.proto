@@ -1,0 +1,382 @@
+syntax = "proto3";
+
+message NetString {
+  uint32 length = 1;
+  bytes data = 2;
+}
+
+message KeepAlivePacket {
+  int32 id = 1;
+}
+
+message LoginPacketCS {
+  int32 protocol_version = 1;
+  NetString username = 2;
+  NetString password = 3;
+  uint64 seed = 4;
+  int32 dimension = 5;
+}
+
+message LoginPacketSC {
+  bytes zeroes = 1; // 8 bytes of zeroes
+}
+
+message HandshakePacketCS {
+  NetString username = 1;
+}
+
+message HandshakePacketSC {
+  NetString response = 1;
+}
+
+message ChatMessagePacket {
+  NetString message = 1;
+}
+
+message TimeUpdatePacketSC {
+  int64 time = 1;
+}
+
+message EntityEquipmentPacketSC {
+  int32 entity_id = 1;
+  int32 slot = 2;
+  int32 item_id = 3;
+  int32 damage = 4;
+}
+
+message SpawnPositionPacketSC {
+  int32 x = 1;
+  int32 y = 2;
+  int32 z = 3;
+}
+
+message UseEntityPacketCS {
+  int32 entity_id = 1;
+  int32 target_entity = 2;
+  int32 left_click = 3;
+}
+
+message UpdateHealthPacketSC {
+  int32 health = 1;
+}
+
+message RespawnDataSC {
+}
+
+message PlayerCS {
+  int32 on_ground = 1;
+}
+
+message PlayerPositionCS {
+  double x = 1;
+  double y = 2;
+  double stance = 3;
+  double z = 4;
+  int32 on_ground = 5;
+}
+
+message PlayerLookCS {
+  float yaw = 1;
+  float pitch = 2;
+  int32 on_ground = 3;
+}
+
+message PlayerPositionAndLookCS {
+  double x = 1;
+  double y = 2;
+  double stance = 3;
+  double z = 4;
+  float yaw = 5;
+  float pitch = 6;
+  int32 on_ground = 7;
+}
+
+message PlayerPositionAndLookSC {
+  double x = 1;
+  double stance = 2;
+  double y = 3;
+  double z = 4;
+  float yaw = 5;
+  float pitch = 6;
+  int32 on_ground = 7;
+}
+
+message PlayerDiggingCS {
+  int32 status = 1;
+  int32 x = 2;
+  int32 y = 3;
+  int32 z = 4;
+  int32 face = 5;
+}
+
+message PlayerPlaceCS {
+  int32 item_id = 1;
+  int32 x = 2;
+  int32 y = 3;
+  int32 z = 4;
+  int32 face = 5;
+}
+
+message HeldItemChangeCS {
+  int32 slot = 1;
+}
+
+message ItemData {
+  int32 item_id = 1;
+  int32 count = 2;
+  int32 damage = 3;
+}
+
+message AddToInventorySC {
+  ItemData item = 1;
+}
+
+message EntityAnimation {
+  int32 entity_id = 1;
+  int32 animation = 2;
+}
+
+message SpawnNamedEntitySC {
+  int32 entity_id = 1;
+  NetString name = 2;
+  int32 x = 3;
+  int32 y = 4;
+  int32 z = 5;
+  sint32 yaw = 6;
+  sint32 pitch = 7;
+  int32 item = 8;
+}
+
+message SpawnDroppedItemSC {
+  int32 entity_id = 1;
+  ItemData item = 2;
+  int32 x = 3;
+  int32 y = 4;
+  int32 z = 5;
+  uint32 yaw = 6;
+  uint32 pitch = 7;
+  uint32 roll = 8;
+}
+
+message CollectItemSC {
+  int32 entity_id = 1;
+  int32 player_id = 2;
+}
+
+message SpawnObjectSC {
+  int32 entity_id = 1;
+  uint32 type = 2;
+  int32 x = 3;
+  int32 y = 4;
+  int32 z = 5;
+}
+
+message SpawnMobSC {
+  int32 entity_id = 1;
+  uint32 type = 2;
+  int32 x = 3;
+  int32 y = 4;
+  int32 z = 5;
+  uint32 yaw = 6;
+  uint32 pitch = 7;
+}
+
+message EntityVelocitySC {
+  int32 entity_id = 1;
+  int32 vx = 2;
+  int32 vy = 3;
+  int32 vz = 4;
+}
+
+message EntityDestroySC {
+  int32 entity_id = 1;
+}
+
+message EntitySC {
+  int32 entity_id = 1;
+}
+
+message EntityRelativeMoveSC {
+  int32 entity_id = 1;
+  sint32 dx = 2;
+  sint32 dy = 3;
+  sint32 dz = 4;
+}
+
+message EntityLookSC {
+  int32 entity_id = 1;
+  sint32 yaw = 2;
+  sint32 pitch = 3;
+}
+
+message EntityLookAndRelativeMoveSC {
+  int32 entity_id = 1;
+  sint32 dx = 2;
+  sint32 dy = 3;
+  sint32 dz = 4;
+  sint32 yaw = 5;
+  sint32 pitch = 6;
+}
+
+message EntityTeleportSC {
+  int32 entity_id = 1;
+  int32 x = 2;
+  int32 y = 3;
+  int32 z = 4;
+  sint32 yaw = 5;
+  sint32 pitch = 6;
+}
+
+message EntityStatusSC {
+  int32 entity_id = 1;
+  uint32 status = 2;
+}
+
+message AttachEntitySC {
+  int32 entity_id = 1;
+  int32 vehicle_id = 2;
+}
+
+message LevelInitializeSC {
+  uint64 seed = 1;
+}
+
+message LevelDataSC {
+  int32 chunkLength = 1;
+  bytes chunkData = 2;
+  uint32 percentComplete = 3;
+}
+
+message LevelFinalizeSC {
+  int32 x = 1;
+  int32 y = 2;
+  int32 z = 3;
+}
+
+message MultiBlockChangeSC {
+  uint32 size = 1;
+  bytes data = 2;
+}
+
+message BlockChangeSC {
+  int32 x = 1;
+  sint32 y = 2;
+  int32 z = 3;
+  uint32 type = 4;
+}
+
+message TileEntitySC {
+  int32 x = 1;
+  sint32 y = 2;
+  int32 z = 3;
+  uint32 size = 4;
+  bytes data = 5;
+}
+
+message ExplosionSC {
+  double x = 1;
+  double y = 2;
+  double z = 3;
+  float radius = 4;
+  int32 count = 5;
+  bytes data = 6;
+}
+
+message KickSC {
+  NetString reason = 1;
+}
+
+enum PacketType {
+  CC_PACKET_TYPE_PING = 0;
+  CC_PACKET_TYPE_LOGIN = 1;
+  CC_PACKET_TYPE_HANDSHAKE = 2;
+  CC_PACKET_TYPE_CHAT_MESSAGE = 3;
+  CC_PACKET_TYPE_TIME_UPDATE = 4;
+  CC_PACKET_TYPE_ENTITY_EQUIPMENT = 5;
+  CC_PACKET_TYPE_SPAWN_POSITION = 6;
+  CC_PACKET_TYPE_USE_ENTITY = 7;
+  CC_PACKET_TYPE_UPDATE_HEALTH = 8;
+  CC_PACKET_TYPE_RESPAWN = 9;
+  CC_PACKET_TYPE_PLAYER = 10;
+  CC_PACKET_TYPE_PLAYER_POSITION = 11;
+  CC_PACKET_TYPE_PLAYER_LOOK = 12;
+  CC_PACKET_TYPE_PLAYER_POSITION_AND_LOOK = 13;
+  CC_PACKET_TYPE_PLAYER_DIGGING = 14;
+  CC_PACKET_TYPE_PLAYER_BLOCK_PLACEMENT = 15;
+  CC_PACKET_TYPE_HELD_ITEM_CHANGE = 16;
+  CC_PACKET_TYPE_ADD_TO_INVENTORY = 17;
+  CC_PACKET_TYPE_ANIMATION = 18;
+  CC_PACKET_TYPE_NAMED_ENTITY_SPAWN = 20;
+  CC_PACKET_TYPE_SPAWN_DROPPED_ITEM = 21;
+  CC_PACKET_TYPE_COLLECT_ITEM = 22;
+  CC_PACKET_TYPE_SPAWN_OBJECT_VEHICLE = 23;
+  CC_PACKET_TYPE_SPAWN_MOB = 24;
+  CC_PACKET_TYPE_ENTITY_VELOCITY = 28;
+  CC_PACKET_TYPE_DESTROY_ENTITY = 29;
+  CC_PACKET_TYPE_ENTITY = 30;
+  CC_PACKET_TYPE_ENTITY_RELATIVE_MOVE = 31;
+  CC_PACKET_TYPE_ENTITY_LOOK = 32;
+  CC_PACKET_TYPE_ENTITY_LOOK_AND_RELATIVE_MOVE = 33;
+  CC_PACKET_TYPE_ENTITY_TELEPORT = 34;
+  CC_PACKET_TYPE_ENTITY_STATUS = 38;
+  CC_PACKET_TYPE_ATTACH_ENTITY = 39;
+  CC_PACKET_TYPE_LEVEL_INIT = 48; // CUSTOM PACKET -- BASED ON CLASSIC CLIENT
+  CC_PACKET_TYPE_LEVEL_DATA = 49; // CUSTOM PACKET -- BASED ON CLASSIC CLIENT
+  CC_PACKET_TYPE_LEVEL_FINALIZE = 50; // CUSTOM PACKET -- BASED ON CLASSIC CLIENT
+  CC_PACKET_TYPE_MULTI_BLOCK_CHANGE = 52;
+  CC_PACKET_TYPE_BLOCK_CHANGE = 53;
+  CC_PACKET_TYPE_TILE_ENTITY = 59;
+  CC_PACKET_TYPE_EXPLOSION = 60;
+  CC_PACKET_TYPE_KICK = 255;
+}
+
+message GeneralPacket {
+  PacketType packet_type = 1;
+
+  oneof packet_content {
+    KeepAlivePacket keep_alive_packet = 2;
+    LoginPacketCS login_packet_cs = 3;
+    LoginPacketSC login_packet_sc = 4;
+    HandshakePacketCS handshake_packet_cs = 5;
+    HandshakePacketSC handshake_packet_sc = 6;
+    ChatMessagePacket chat_message_packet = 7;
+    TimeUpdatePacketSC time_update_packet_sc = 8;
+    EntityEquipmentPacketSC entity_equipment_packet_sc = 9;
+    SpawnPositionPacketSC spawn_position_packet_sc = 10;
+    UseEntityPacketCS use_entity_packet_cs = 11;
+    UpdateHealthPacketSC update_health_packet_sc = 12;
+    RespawnDataSC respawn_data_sc = 13;
+    PlayerCS player_cs = 14;
+    PlayerPositionCS player_position_cs = 15;
+    PlayerLookCS player_look_cs = 16;
+    PlayerPositionAndLookCS player_position_and_look_cs = 17;
+    PlayerPositionAndLookSC player_position_and_look_sc = 18;
+    PlayerDiggingCS player_digging_cs = 19;
+    PlayerPlaceCS player_place_cs = 20;
+    HeldItemChangeCS held_item_change_cs = 21;
+    AddToInventorySC add_to_inventory_sc = 22;
+    EntityAnimation entity_animation = 23;
+    SpawnNamedEntitySC spawn_named_entity_sc = 24;
+    SpawnDroppedItemSC spawn_dropped_item_sc = 25;
+    CollectItemSC collect_item_sc = 26;
+    SpawnObjectSC spawn_object_sc = 27;
+    SpawnMobSC spawn_mob_sc = 28;
+    EntityVelocitySC entity_velocity_sc = 29;
+    EntityDestroySC entity_destroy_sc = 30;
+    EntitySC entity_sc = 31;
+    EntityRelativeMoveSC entity_relative_move_sc = 32;
+    EntityLookSC entity_look_sc = 33;
+    EntityLookAndRelativeMoveSC entity_look_and_relative_move_sc = 34;
+    EntityTeleportSC entity_teleport_sc = 35;
+    EntityStatusSC entity_status_sc = 36;
+    AttachEntitySC attach_entity_sc = 37;
+    LevelInitializeSC level_initialize_sc = 38;
+    LevelDataSC level_data_sc = 39;
+    LevelFinalizeSC level_finalize_sc = 40;
+    MultiBlockChangeSC multi_block_change_sc = 41;
+    BlockChangeSC block_change_sc = 42;
+    TileEntitySC tile_entity_sc = 43;
+    ExplosionSC explosion_sc = 44;
+    KickSC kick_sc = 45;
+  }
+}
