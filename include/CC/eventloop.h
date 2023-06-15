@@ -6,53 +6,53 @@ extern "C" {
 #endif
 
 typedef struct {
-    PacketType type;
+    EP_PacketType type;
     // Union of all packets structures defined above
     union {
-        KeepAlivePacket keep_alive;
-        LoginPacketCS login_cs;
-        LoginPacketSC login_sc;
-        HandshakePacketCS handshake_cs;
-        HandShakePacketSC handshake_sc;
-        ChatMessagePacket chat_message;
-        TimeUpdatePacketSC time_update;
-        EntityEquipmentPacketSC entity_equipment;
-        SpawnPositionPacketSC spawn_position;
-        UseEntityPacketCS use_entity;
-        UpdateHealthPacketSC update_health;
-        long respawn_data;
-        PlayerCS player_cs;
-        PlayerPositionCS player_position_cs;
-        PlayerLookCS player_look_cs;
-        PlayerPositionAndLookCS player_position_and_look_cs;
-        PlayerPositionAndLookSC player_position_and_look_sc;
-        PlayerDiggingCS player_digging_cs;
-        PlayerPlaceCS player_place_cs;
-        HeldItemChangeCS held_item_change_cs;
-        AddToInventorySC add_to_inventory_sc;
-        EntityAnimation entity_animation;
-        SpawnNamedEntitySC spawn_named_entity_sc;
-        SpawnDroppedItemSC spawn_dropped_item_sc;
-        CollectItemSC collect_item_sc;
-        SpawnObjectSC spawn_object_sc;
-        SpawnMobSC spawn_mob_sc;
-        EntityVelocitySC entity_velocity_sc;
-        EntityDestroySC entity_destroy_sc;
-        EntitySC entity_sc;
-        EntityRelativeMoveSC entity_relative_move_sc;
-        EntityLookSC entity_look_sc;
-        EntityLookAndRelativeMoveSC entity_look_and_relative_move_sc;
-        EntityTeleportSC entity_teleport_sc;
-        EntityStatusSC entity_status_sc;
-        AttachEntitySC attach_entity_sc;
-        LevelInitializeSC level_initialize_sc;
-        LevelDataSC level_data_sc;
-        LevelFinalizeSC level_finalize_sc;
-        MultiBlockChangeSC multi_block_change_sc;
-        BlockChangeSC block_change_sc;
-        TileEntitySC tile_entity_sc;
-        ExplosionSC explosion_sc;
-        KickSC kick_sc;
+        EP_KeepAlivePacket keep_alive;
+        EP_LoginPacketCS login_cs;
+        EP_LoginPacketSC login_sc;
+        EP_HandshakePacketCS handshake_cs;
+        EP_HandShakePacketSC handshake_sc;
+        EP_ChatMessagePacket chat_message;
+        EP_TimeUpdatePacketSC time_update;
+        EP_EntityEquipmentPacketSC entity_equipment;
+        EP_SpawnPositionPacketSC spawn_position;
+        EP_UseEntityPacketCS use_entity;
+        EP_UpdateHealthPacketSC update_health;
+        EP_RespawnDataSC* respawn_data;
+        EP_PlayerCS player_cs;
+        EP_PlayerPositionCS player_position_cs;
+        EP_PlayerLookCS player_look_cs;
+        EP_PlayerPositionAndLookCS player_position_and_look_cs;
+        EP_PlayerPositionAndLookSC player_position_and_look_sc;
+        EP_PlayerDiggingCS player_digging_cs;
+        EP_PlayerPlaceCS player_place_cs;
+        EP_HeldItemChangeCS held_item_change_cs;
+        EP_AddToInventorySC add_to_inventory_sc;
+        EP_EntityAnimation entity_animation;
+        EP_SpawnNamedEntitySC spawn_named_entity_sc;
+        EP_SpawnDroppedItemSC spawn_dropped_item_sc;
+        EP_CollectItemSC collect_item_sc;
+        EP_SpawnObjectSC spawn_object_sc;
+        EP_SpawnMobSC spawn_mob_sc;
+        EP_EntityVelocitySC entity_velocity_sc;
+        EP_EntityDestroySC entity_destroy_sc;
+        EP_EntitySC entity_sc;
+        EP_EntityRelativeMoveSC entity_relative_move_sc;
+        EP_EntityLookSC entity_look_sc;
+        EP_EntityLookAndRelativeMoveSC entity_look_and_relative_move_sc;
+        EP_EntityTeleportSC entity_teleport_sc;
+        EP_EntityStatusSC entity_status_sc;
+        EP_AttachEntitySC attach_entity_sc;
+        EP_LevelInitializeSC level_initialize_sc;
+        EP_LevelDataSC level_data_sc;
+        EP_LevelFinalizeSC level_finalize_sc;
+        EP_MultiBlockChangeSC multi_block_change_sc;
+        EP_BlockChangeSC block_change_sc;
+        EP_TileEntitySC tile_entity_sc;
+        EP_ExplosionSC explosion_sc;
+        EP_KickSC kick_sc;
     } data;
 } EventPacket;
 
@@ -87,7 +87,7 @@ void CC_EventLoop_Shutdown(void);
  * @param type One of the PacketType enum values.
  * @param handler The handler function.
  */
-void CC_EventLoop_RegisterHandler(PacketType type, EventHandler handler);
+void CC_EventLoop_RegisterHandler(EP_PacketType type, EventHandler handler);
 
 /**
  * Pushes a packet into the event loop.

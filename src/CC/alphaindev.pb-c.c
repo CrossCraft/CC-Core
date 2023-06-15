@@ -3446,9 +3446,9 @@ static const ProtobufCIntRange item_data__number_ranges[1 + 1] =
 const ProtobufCMessageDescriptor item_data__descriptor =
 {
   PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
-  "ItemData",
-  "ItemData",
-  "ItemData",
+  "Item",
+  "Item",
+  "Item",
   "",
   sizeof(ItemData),
   3,

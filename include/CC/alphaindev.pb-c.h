@@ -426,7 +426,7 @@ struct  SpawnDroppedItemSC
 {
   ProtobufCMessage base;
   int32_t entity_id;
-  ItemData *item;
+    ItemData *item;
   int32_t x;
   int32_t y;
   int32_t z;
@@ -1192,7 +1192,7 @@ HeldItemChangeCS *
 void   held_item_change_cs__free_unpacked
                      (HeldItemChangeCS *message,
                       ProtobufCAllocator *allocator);
-/* ItemData methods */
+/* Item methods */
 void   item_data__init
                      (ItemData         *message);
 size_t item_data__get_packed_size

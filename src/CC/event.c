@@ -136,7 +136,7 @@ void CC_Event_Handle_InBound_Client(void) {
                     // Check to see if we can spawn an item
                     block_t block;
                     CC_World_GetBlock(event->data.set_block.x, event->data.set_block.y, event->data.set_block.z, &block);
-                    ItemData item_data = CC_Item_Lookup_Block_Drop(block);
+                    Item item_data = CC_Item_Lookup_Block_Drop(block);
 
                     if(item_data.count > 0) {
                         CC_Event new_event;
@@ -167,7 +167,7 @@ void CC_Event_Handle_InBound_Client(void) {
     }
 }
 
-void CC_Event_Push_SpawnItem(ItemData item_data, float x, float y, float z, float vx, float vy, float vz) {
+void CC_Event_Push_SpawnItem(Item item_data, float x, float y, float z, float vx, float vy, float vz) {
     CC_Event new_event;
     new_event.type = CC_EVENT_SPAWN_ITEM;
 

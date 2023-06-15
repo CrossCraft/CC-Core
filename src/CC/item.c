@@ -1,7 +1,7 @@
 #include <CC/item.h>
 
-ItemData CC_Item_Lookup_Block_Drop(block_t block) {
-    ItemData item = {0};
+Item CC_Item_Lookup_Block_Drop(block_t block) {
+    Item item = {0};
     item.item_id = 0;
     item.damage = 0;
     item.count = 0;

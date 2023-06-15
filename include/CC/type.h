@@ -16,12 +16,12 @@ typedef struct {
     int16_t item_id;
     int8_t count;
     int16_t damage;
-} ItemData;
+} Item;
 
 // Slot Data Structure
 typedef struct {
     uint8_t slot;
-    ItemData data;
+    Item data;
 } SlotData;
 
 // World data structure

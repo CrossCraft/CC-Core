@@ -56,7 +56,7 @@ void CC_Entity_Destroy(uint16_t eid) {
 
 int16_t CC_Entity_SpawnItem(float x, float y, float z, float vx, float vy, float vz, item_t item, item_t data, uint8_t count) {
     CC_Entity entity;
-    entity.type = Item;
+    entity.type = ItemDrop;
     entity.x = x + 0.5f;
     entity.y = y + 0.5f;
     entity.z = z + 0.5f;
@@ -65,10 +65,10 @@ int16_t CC_Entity_SpawnItem(float x, float y, float z, float vx, float vy, float
     entity.vz = vz;
     entity.pitch = 0;
     entity.yaw = 0;
-    entity.data = malloc(sizeof(ItemData));
-    ((ItemData*)entity.data)->item_id = item;
-    ((ItemData*)entity.data)->damage = data;
-    ((ItemData*)entity.data)->count = count;
+    entity.data = malloc(sizeof(Item));
+    ((Item*)entity.data)->item_id = item;
+    ((Item*)entity.data)->damage = data;
+    ((Item*)entity.data)->count = count;
     return CC_Entity_Spawn(&entity);
 }
 
@@ -123,7 +123,7 @@ void CC_Entity_Update(double dt) {
         if (CC_GLOBAL_EntityManager.inUse[i]) {
             CC_Entity* entity = &CC_GLOBAL_EntityManager.entities[i];
             switch (entity->type) {
-                case Item: {
+                case ItemDrop: {
                     // Check collisions
                     CC_Entity_CheckCollide(entity->eid, 0.05f);
 

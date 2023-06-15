@@ -52,11 +52,7 @@ typedef enum {
     CC_PACKET_TYPE_TILE_ENTITY = 0x3B,
     CC_PACKET_TYPE_EXPLOSION = 0x3C,
     CC_PACKET_TYPE_KICK = 0xFF,
-} PacketType;
-
-typedef struct {
-    uint8_t type;
-} Packet;
+} EP_PacketType;
 
 /**
  * Ping packet
@@ -66,7 +62,7 @@ typedef struct {
  */
 typedef struct {
     int32_t id;
-} KeepAlivePacket;
+} EP_KeepAlivePacket;
 
 /**
  * Login packet from Client -> Server
@@ -82,7 +78,7 @@ typedef struct {
     net_string password;
     uint64_t seed;
     uint8_t dimension;
-} LoginPacketCS;
+} EP_LoginPacketCS;
 
 /**
  * Login packet from Server -> Client
@@ -91,7 +87,7 @@ typedef struct {
  */
 typedef struct {
     uint8_t zeroes[8];
-} LoginPacketSC;
+} EP_LoginPacketSC;
 
 /**
  * Handshake packet from Client -> Server
@@ -99,7 +95,7 @@ typedef struct {
  */
 typedef struct {
     net_string username;
-} HandshakePacketCS;
+} EP_HandshakePacketCS;
 
 /**
  * Handshake packet from Server -> Client
@@ -107,7 +103,7 @@ typedef struct {
  */
 typedef struct {
     net_string response;
-} HandShakePacketSC;
+} EP_HandShakePacketSC;
 
 /**
  * Chat message packet from Client <-> Server
@@ -115,7 +111,7 @@ typedef struct {
  */
 typedef struct {
     net_string message; // Client can send 100 characters, server can send 119 characters
-} ChatMessagePacket;
+} EP_ChatMessagePacket;
 
 /**
  * Time update packet from Server -> Client
@@ -123,7 +119,7 @@ typedef struct {
  */
 typedef struct {
     int64_t time;
-} TimeUpdatePacketSC;
+} EP_TimeUpdatePacketSC;
 
 /**
  * Entity equipment packet from Server -> Client
@@ -141,7 +137,7 @@ typedef struct {
     int16_t slot;
     int16_t item_id;
     int16_t damage;
-} EntityEquipmentPacketSC;
+} EP_EntityEquipmentPacketSC;
 
 /**
  * Spawn position packet from Server -> Client
@@ -154,7 +150,7 @@ typedef struct {
  */
 typedef struct {
     int32_t x, y, z;
-} SpawnPositionPacketSC;
+} EP_SpawnPositionPacketSC;
 
 /**
  * Use entity packet from Client -> Server
@@ -168,7 +164,7 @@ typedef struct {
     int32_t entity_id;
     int32_t target_entity;
     uint8_t left_click;
-} UseEntityPacketCS;
+} EP_UseEntityPacketCS;
 
 /**
  * Update health packet from Server -> Client
@@ -178,14 +174,14 @@ typedef struct {
  */
 typedef struct {
     int8_t health;
-} UpdateHealthPacketSC;
+} EP_UpdateHealthPacketSC;
 
 /**
  * Respawn packet from Server -> Client
  *
  * These packets are actually blank -- they don't contain any data
  */
-typedef struct CC_RespawnDataSC RespawnDataSC;
+typedef struct CC_RespawnDataSC EP_RespawnDataSC;
 
 /**
  * Player packet from Client -> Server
@@ -197,7 +193,7 @@ typedef struct CC_RespawnDataSC RespawnDataSC;
  */
 typedef struct {
     uint8_t on_ground;
-} PlayerCS;
+} EP_PlayerCS;
 
 /**
  * Player position packet from Client -> Server
@@ -212,7 +208,7 @@ typedef struct {
 typedef struct {
     double x, y, stance, z;
     uint8_t on_ground;
-} PlayerPositionCS;
+} EP_PlayerPositionCS;
 
 /**
  * Player look packet from Client -> Server
@@ -225,7 +221,7 @@ typedef struct {
 typedef struct {
     float yaw, pitch;
     uint8_t on_ground;
-} PlayerLookCS;
+} EP_PlayerLookCS;
 
 /**
  * Player position and look packet from Client -> Server
@@ -243,7 +239,7 @@ typedef struct {
     double x, y, stance, z;
     float yaw, pitch;
     uint8_t on_ground;
-} PlayerPositionAndLookCS;
+} EP_PlayerPositionAndLookCS;
 
 /**
  * Player position and look packet from Server -> Client
@@ -261,7 +257,7 @@ typedef struct {
     double x, stance, y, z;
     float yaw, pitch;
     uint8_t on_ground;
-} PlayerPositionAndLookSC;
+} EP_PlayerPositionAndLookSC;
 
 /**
  * Player digging packet from Client -> Server
@@ -277,7 +273,7 @@ typedef struct {
     uint8_t y;
     int32_t z;
     uint8_t face;
-} PlayerDiggingCS;
+} EP_PlayerDiggingCS;
 
 /**
  * Player places an item packet from Client -> Server
@@ -292,7 +288,7 @@ typedef struct {
     int32_t z;
 
     uint8_t face;
-} PlayerPlaceCS;
+} EP_PlayerPlaceCS;
 
 /**
  * Holding change packet from Client -> Server
@@ -300,15 +296,15 @@ typedef struct {
  */
 typedef struct {
     int16_t slot;
-} HeldItemChangeCS;
+} EP_HeldItemChangeCS;
 
 /**
  * Adds an item to the inventory from Server -> Client
  * @param item The item to add
  */
 typedef struct {
-    ItemData item;
-} AddToInventorySC;
+    Item item;
+} EP_AddToInventorySC;
 
 /**
  * Sent whenever an entity needs to be animated from Client <-> Server
@@ -318,7 +314,7 @@ typedef struct {
 typedef struct {
     int32_t entity_id;
     uint8_t animation; //TODO: Enum
-} EntityAnimation;
+} EP_EntityAnimation;
 
 /**
  * Sent when a player is spawned from Server -> Client
@@ -339,7 +335,7 @@ typedef struct {
     int32_t x, y, z;
     int8_t yaw, pitch;
     int16_t item;
-} SpawnNamedEntitySC;
+} EP_SpawnNamedEntitySC;
 
 /**
  * Sent when an item is dropped from Server -> Client
@@ -356,10 +352,10 @@ typedef struct {
  */
 typedef struct {
     int32_t entity_id;
-    ItemData item;
+    Item item;
     int32_t x, y, z;
     uint8_t yaw, pitch, roll;
-} SpawnDroppedItemSC;
+} EP_SpawnDroppedItemSC;
 
 /**
  * Sent when an item is picked up (animation only) from Server -> Client
@@ -371,7 +367,7 @@ typedef struct {
 typedef struct {
     int32_t entity_id;
     int32_t player_id;
-} CollectItemSC;
+} EP_CollectItemSC;
 
 /**
  * Sent when an object is spawned from Server -> Client
@@ -385,7 +381,7 @@ typedef struct {
     int32_t entity_id;
     uint8_t type;
     int32_t x, y, z;
-} SpawnObjectSC;
+} EP_SpawnObjectSC;
 
 /**
  * Spawn mob packet from Server -> Client
@@ -396,7 +392,7 @@ typedef struct {
     uint8_t type;
     int32_t x, y, z;
     uint8_t yaw, pitch;
-} SpawnMobSC;
+} EP_SpawnMobSC;
 
 /**
  * Set entity motion packet from Server -> Client
@@ -411,21 +407,21 @@ typedef struct {
 typedef struct {
    int32_t entity_id;
    int16_t vx, vy, vz;
-} EntityVelocitySC;
+} EP_EntityVelocitySC;
 
 /**
  * Destroy entity packet from Server -> Client
  */
 typedef struct {
     int32_t entity_id;
-} EntityDestroySC;
+} EP_EntityDestroySC;
 
 /**
  * Entity packet from Server -> Client
  */
 typedef struct {
     int32_t entity_id;
-} EntitySC;
+} EP_EntitySC;
 
 /**
  * Entity relative move packet from Server -> Client
@@ -443,7 +439,7 @@ typedef struct {
 typedef struct {
     int32_t entity_id;
     int8_t dx, dy, dz;
-} EntityRelativeMoveSC;
+} EP_EntityRelativeMoveSC;
 
 /**
  * Entity look packet from Server -> Client
@@ -459,7 +455,7 @@ typedef struct {
 typedef struct {
     int32_t entity_id;
     int8_t yaw, pitch;
-} EntityLookSC;
+} EP_EntityLookSC;
 
 /**
  * Entity look and relative move packet from Server -> Client
@@ -477,7 +473,7 @@ typedef struct {
     int32_t entity_id;
     int8_t dx, dy, dz;
     int8_t yaw, pitch;
-} EntityLookAndRelativeMoveSC;
+} EP_EntityLookAndRelativeMoveSC;
 
 /**
  * Entity teleport packet from Server -> Client
@@ -494,7 +490,7 @@ typedef struct {
     int32_t entity_id;
     int32_t x, y, z;
     int8_t yaw, pitch;
-} EntityTeleportSC;
+} EP_EntityTeleportSC;
 
 /**
  * Entity status packet from Server -> Client
@@ -506,7 +502,7 @@ typedef struct {
 typedef struct {
     int32_t entity_id;
     uint8_t status;
-} EntityStatusSC;
+} EP_EntityStatusSC;
 
 /**
  * Attach entity packet from Server -> Client
@@ -518,7 +514,7 @@ typedef struct {
 typedef struct {
     int32_t entity_id;
     int32_t vehicle_id;
-} AttachEntitySC;
+} EP_AttachEntitySC;
 
 /**
  * Level initialize packet from Server -> Client
@@ -528,7 +524,7 @@ typedef struct {
  */
 typedef struct {
     uint64_t seed;
-} LevelInitializeSC;
+} EP_LevelInitializeSC;
 
 /**
  * Level data packet from Server -> Client
@@ -544,7 +540,7 @@ typedef struct {
     int16_t chunkLength;
     uint8_t chunkData;
     uint8_t percentComplete;
-} LevelDataSC;
+} EP_LevelDataSC;
 
 /**
  * Level finalize packet from Server -> Client
@@ -556,7 +552,7 @@ typedef struct {
  */
 typedef struct {
     int16_t x, y, z;
-} LevelFinalizeSC;
+} EP_LevelFinalizeSC;
 
 /**
  * Multiple block change packet from Server -> Client
@@ -566,7 +562,7 @@ typedef struct {
 typedef struct {
     uint16_t size;
     uint8_t* data;
-} MultiBlockChangeSC;
+} EP_MultiBlockChangeSC;
 
 /**
  * Block change packet from Server -> Client
@@ -580,7 +576,7 @@ typedef struct {
     int8_t y;
     int32_t z;
     uint8_t type;
-} BlockChangeSC;
+} EP_BlockChangeSC;
 
 /**
  * Sends a tile entity packet from Server -> Client
@@ -599,7 +595,7 @@ typedef struct {
 
     uint16_t size;
     uint8_t* data;
-} TileEntitySC;
+} EP_TileEntitySC;
 
 /**
  * Cause an explosion packet from Server -> Client
@@ -618,7 +614,7 @@ typedef struct {
 
     int32_t count;
     uint8_t* data;
-} ExplosionSC;
+} EP_ExplosionSC;
 
 /**
  * Kick the client packet from Server -> Client
@@ -626,7 +622,7 @@ typedef struct {
  */
 typedef struct {
     net_string reason;
-} KickSC;
+} EP_KickSC;
 
 #ifdef __cplusplus
 };

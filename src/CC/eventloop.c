@@ -28,7 +28,7 @@ void CC_EventLoop_Shutdown(void) {
     }
 }
 
-void CC_EventLoop_RegisterHandler(PacketType type, EventHandler handler) {
+void CC_EventLoop_RegisterHandler(EP_PacketType type, EventHandler handler) {
     EventMapping* emap = &CC_EventLoop_Mapping[type];
     if(emap->count == 0) {
         emap->handlers = malloc(sizeof(EventHandler));
@@ -77,10 +77,6 @@ void CC_EventLoop_Update(void) {
     CC_EventLoop_Inbound.length = 0;
 
     for(size_t i = 0; i < CC_EventLoop_Outbound.length; i++) {
-        EventPacket *packet = &CC_EventLoop_Outbound.packets[i];
-        uint8_t *data;
-        size_t size = CC_EventLoop_SerializePacket(packet, &data);
-        //TODO: Send data
-        free(data);
+        //TODO:
     }
 }

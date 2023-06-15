@@ -5,7 +5,7 @@ extern "C" {
 #endif
 
 typedef enum {
-    Item = 1,
+    ItemDrop = 1,
 } CC_EntityType;
 
 typedef struct {

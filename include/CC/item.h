@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-ItemData CC_Item_Lookup_Block_Drop(block_t block);
+Item CC_Item_Lookup_Block_Drop(block_t block);
 
 #if __cplusplus
 };
