@@ -1,5 +1,6 @@
 #pragma once
 #include <CC/netproto.h>
+#include <CC/databus.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -137,6 +138,11 @@ void CC_EventLoop_SetServer(bool server);
  */
 void CC_EventLoop_Update(void);
 
+/**
+ * Sets the data bus for the event loop.
+ * @param bus The data bus.
+ */
+void CC_EventLoop_SetBus(DataBus* bus);
 
 #ifdef __cplusplus
 }

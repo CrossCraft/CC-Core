@@ -3,11 +3,15 @@
 #include <stddef.h>
 #include <string.h>
 #include <CC/alphaindev.pb-c.h>
+#include <stdio.h>
+#include <CC/netproto.h>
 
 static EventMapping CC_EventLoop_Mapping[256];
 
 static EventList CC_EventLoop_Inbound;
 static EventList CC_EventLoop_Outbound;
+
+//static DataBus CC_EventDataBus;
 
 void CC_EventLoop_Init(void) {
     memset(CC_EventLoop_Mapping, 0, sizeof(CC_EventLoop_Mapping));
@@ -56,7 +60,117 @@ void CC_EventLoop_PushPacketOutbound(EventPacket* packet) {
     CC_EventLoop_Outbound.length++;
 }
 
-EventPacket* CC_EventLoop_DeserializePacket(uint8_t* data, size_t size);
+void copyNetString(net_string* dest, NetString* src) {
+    dest->length = src->length;
+    dest->data = malloc(dest->length);
+    memcpy(dest->data, src->data.data, dest->length);
+}
+
+EventPacket* CC_EventLoop_DeserializePacket(uint8_t* data, size_t size) {
+    EventPacket* packet = malloc(sizeof(EventPacket));
+    GeneralPacket* gp = general_packet__unpack(NULL, size, data);
+
+    switch(gp->packet_content_case) {
+        case GENERAL_PACKET__PACKET_CONTENT__NOT_SET:
+            fprintf(stderr, "CC_EventLoop_DeserializePacket: Packet content not set\n");
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_KEEP_ALIVE_PACKET:
+            packet->type = CC_PACKET_TYPE_PING;
+            packet->data.keep_alive.id = gp->keep_alive_packet->id;
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_LOGIN_PACKET_CS:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_LOGIN_PACKET_SC:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_HANDSHAKE_PACKET_CS:
+            packet->type = CC_PACKET_TYPE_HANDSHAKE;
+            copyNetString(&packet->data.handshake_cs.username, gp->handshake_packet_cs->username);
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_HANDSHAKE_PACKET_SC:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_CHAT_MESSAGE_PACKET:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_TIME_UPDATE_PACKET_SC:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_ENTITY_EQUIPMENT_PACKET_SC:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_SPAWN_POSITION_PACKET_SC:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_USE_ENTITY_PACKET_CS:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_UPDATE_HEALTH_PACKET_SC:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_RESPAWN_DATA_SC:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_PLAYER_CS:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_PLAYER_POSITION_CS:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_PLAYER_LOOK_CS:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_PLAYER_POSITION_AND_LOOK_CS:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_PLAYER_POSITION_AND_LOOK_SC:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_PLAYER_DIGGING_CS:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_PLAYER_PLACE_CS:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_HELD_ITEM_CHANGE_CS:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_ADD_TO_INVENTORY_SC:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_ENTITY_ANIMATION:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_SPAWN_NAMED_ENTITY_SC:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_SPAWN_DROPPED_ITEM_SC:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_COLLECT_ITEM_SC:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_SPAWN_OBJECT_SC:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_SPAWN_MOB_SC:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_ENTITY_VELOCITY_SC:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_ENTITY_DESTROY_SC:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_ENTITY_SC:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_ENTITY_RELATIVE_MOVE_SC:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_ENTITY_LOOK_SC:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_ENTITY_LOOK_AND_RELATIVE_MOVE_SC:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_ENTITY_TELEPORT_SC:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_ENTITY_STATUS_SC:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_ATTACH_ENTITY_SC:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_LEVEL_INITIALIZE_SC:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_LEVEL_DATA_SC:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_LEVEL_FINALIZE_SC:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_MULTI_BLOCK_CHANGE_SC:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_BLOCK_CHANGE_SC:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_TILE_ENTITY_SC:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_EXPLOSION_SC:
+            break;
+        case GENERAL_PACKET__PACKET_CONTENT_KICK_SC:
+            break;
+        case _GENERAL_PACKET__PACKET_CONTENT__CASE_IS_INT_SIZE:
+            break;
+    }
+    return packet;
+}
 
 void CC_EventLoop_FreePacket(EventPacket* packet) {
     //TODO: Hande freeing of packet data
@@ -66,17 +180,6 @@ void CC_EventLoop_FreePacket(EventPacket* packet) {
 size_t CC_EventLoop_SerializePacket(EventPacket* packet, uint8_t** data);
 
 void CC_EventLoop_Update(void) {
-    for(size_t i = 0; i < CC_EventLoop_Inbound.length; i++) {
-        EventPacket* packet = &CC_EventLoop_Inbound.packets[i];
-        EventMapping* emap = &CC_EventLoop_Mapping[packet->type];
-        for(size_t j = 0; j < emap->count; j++) {
-            emap->handlers[j](packet);
-        }
-        CC_EventLoop_FreePacket(packet);
-    }
-    CC_EventLoop_Inbound.length = 0;
-
-    for(size_t i = 0; i < CC_EventLoop_Outbound.length; i++) {
-        //TODO:
-    }
 }
+
+void CC_EventLoop_SetBus(DataBus* bus);
