@@ -125,7 +125,7 @@ EventPacket CC_EventLoop_DeserializePacket(EventLoop* loop, uint8_t* data, size_
  * Frees a packet.
  * @param packet The packet to free.
  */
-void CC_EventLoop_FreePacket(EventPacket packet);
+void CC_EventLoop_FreePacket(EventPacket packet, bool cs);
 
 /**
  * Serializes a packet into a byte array.

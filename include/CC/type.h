@@ -37,7 +37,7 @@ typedef struct {
     float pitch, yaw;
     bool on_ground;
 
-    int16_t health;
+    int8_t health;
     int16_t air;
 } PlayerData;
 

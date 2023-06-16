@@ -117,9 +117,9 @@ void CC_Player_Update(void) {
 }
 
 void CC_Player_Respawn(void) {
-    CC_GLOBAL_player_data.x = 0.0f;
-    CC_GLOBAL_player_data.y = 0.0f;
-    CC_GLOBAL_player_data.z = 0.0f;
+    CC_GLOBAL_player_data.x = 128.0f;
+    CC_GLOBAL_player_data.y = 40.0f;
+    CC_GLOBAL_player_data.z = 128.0f;
     CC_GLOBAL_player_data.vx = 0.0f;
     CC_GLOBAL_player_data.vy = 0.0f;
     CC_GLOBAL_player_data.vz = 0.0f;

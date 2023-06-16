@@ -2,8 +2,8 @@
 #include <CC/entity.h>
 #include <CC/eventloop.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <CC/eventpackets.h>
 
 static EventLoop * CC_GLOBAL_event_loop = NULL;
 
@@ -19,18 +19,32 @@ void CC_Core_Init(void) {
     CC_Player_Init();
 }
 
-void CC_Server_Handle_Handshake(void* loop, EventPacket* packet) {
-    printf("Handshake packet received\n");
-    printf("Client Username: %s\n", packet->data.handshake_cs.username.data);
+void CC_Server_Handle_LoginClient(void* loop, EventPacket* packet) {
+    printf("Client Logging In Username: %s\n", packet->data.login_cs.username.data);
+    printf("Client Logging In Password: %s\n", packet->data.login_cs.password.data);
 
-    EventPacket* packet_response = malloc(sizeof(EventPacket));
-    packet_response->type = CC_PACKET_TYPE_HANDSHAKE;
-    packet_response->data.handshake_sc.response.length = strlen("-");
-    packet_response->data.handshake_sc.response.data = malloc(packet_response->data.handshake_sc.response.length);
-    memcpy(packet_response->data.handshake_sc.response.data, "-", packet_response->data.handshake_sc.response.length);
+    EventPacket packet_response = CC_EventPacket_Create_LoginServer();
 
     EventLoop* eloop = (EventLoop*)loop;
-    CC_EventLoop_PushPacketOutbound(eloop, packet_response);
+    CC_EventLoop_PushPacketOutbound(eloop, &packet_response);
+
+    EventPacket spawnPosition = CC_EventPacket_Create_SpawnPosition(128, 40, 128);
+    CC_EventLoop_PushPacketOutbound(eloop, &spawnPosition);
+
+    EventPacket playerPositionAndLook = CC_EventPacket_Create_PlayerPositionAndLookServer(128, 40, 128, 0, 0, false);
+    CC_EventLoop_PushPacketOutbound(eloop, &playerPositionAndLook);
+
+    EventPacket updateHealth = CC_EventPacket_Create_UpdateHealthServer();
+    CC_EventLoop_PushPacketOutbound(eloop, &updateHealth);
+}
+
+void CC_Server_Handle_Handshake(void* loop, EventPacket* packet) {
+    printf("Client Connecting Username: %s\n", packet->data.handshake_cs.username.data);
+
+    EventPacket packet_response = CC_EventPacket_Create_Handshake("", true);
+
+    EventLoop* eloop = (EventLoop*)loop;
+    CC_EventLoop_PushPacketOutbound(eloop, &packet_response);
 }
 
 void CC_Core_SetEventLoop(EventLoop * event_loop) {
@@ -38,6 +52,7 @@ void CC_Core_SetEventLoop(EventLoop * event_loop) {
     CC_EventLoop_SetServer(event_loop, true);
 
     CC_EventLoop_RegisterHandler(event_loop, CC_PACKET_TYPE_HANDSHAKE, CC_Server_Handle_Handshake);
+    CC_EventLoop_RegisterHandler(event_loop, CC_PACKET_TYPE_LOGIN, CC_Server_Handle_LoginClient);
 }
 
 static float CC_GLOBAL_delta_time = 0.0f;

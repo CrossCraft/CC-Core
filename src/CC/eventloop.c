@@ -64,6 +64,85 @@ void CC_EventLoop_PushPacketOutbound(EventLoop* loop, EventPacket* packet) {
     loop->outbound_events.length++;
 }
 
+void CC_EventLoop_Update(EventLoop* loop) {
+    // Serialize inbound packets
+    size_t input_length;
+    uint8_t* data = NULL;
+    while((input_length = loop->inbound_bus->read(&data, loop->inbound_context)) != 0) {
+        EventPacket packet = CC_EventLoop_DeserializePacket(loop, data, input_length);
+        CC_EventLoop_PushPacketInbound(loop, &packet);
+        free(data);
+    }
+
+    // Handle inbound packets
+    for(size_t i = 0; i < loop->inbound_events.length; i++) {
+        EventPacket packet = loop->inbound_events.packets[i];
+        EventMapping* emap = &loop->mapping[packet.type];
+        for(size_t j = 0; j < emap->count; j++) {
+            emap->handlers[j](loop, &packet);
+        }
+        CC_EventLoop_FreePacket(packet, loop->server);
+    }
+    loop->inbound_events.length = 0;
+
+    // Handle outbound packets
+    for(size_t i = 0; i < loop->outbound_events.length; i++) {
+        EventPacket packet = loop->outbound_events.packets[i];
+        size_t output_length;
+        uint8_t* out_data = NULL;
+        output_length = CC_EventLoop_SerializePacket(loop, packet, &out_data);
+        loop->outbound_bus->write(out_data, output_length, loop->outbound_context);
+        free(out_data);
+        CC_EventLoop_FreePacket(packet, !loop->server);
+    }
+    loop->outbound_events.length = 0;
+}
+
+void CC_EventLoop_SetInboundBus(EventLoop* loop, DataBus* bus, void* context) {
+    loop->inbound_bus = bus;
+    loop->inbound_context = context;
+}
+
+void CC_EventLoop_SetOutboundBus(EventLoop* loop, DataBus* bus, void* context) {
+    loop->outbound_bus = bus;
+    loop->outbound_context = context;
+}
+
+void CC_EventLoop_SetServer(EventLoop* loop, bool server) {
+    loop->server = server;
+}
+
+void CC_EventLoop_FreePacket(EventPacket packet, bool cs) {
+    switch(packet.type) {
+        case CC_PACKET_TYPE_HANDSHAKE: {
+            free(packet.data.handshake_cs.username.data);
+            break;
+        }
+        case CC_PACKET_TYPE_LOGIN: {
+            if(cs) {
+                free(packet.data.login_cs.username.data);
+                free(packet.data.login_cs.password.data);
+            }
+            break;
+        }
+
+        case CC_PACKET_TYPE_SPAWN_POSITION: {
+            break;
+        }
+        case CC_PACKET_TYPE_UPDATE_HEALTH: {
+            break;
+        }
+        case CC_PACKET_TYPE_PLAYER_POSITION_AND_LOOK: {
+            break;
+        }
+
+        default: {
+            printf("Unhandled Packet type: %d\n", packet.type);
+            break;
+        }
+    }
+}
+
 EventPacket CC_EventLoop_DeserializePacket(EventLoop* loop, uint8_t* data, size_t size) {
     GeneralPacket* gp = general_packet__unpack(NULL, size, data);
     EventPacket packet;
@@ -85,6 +164,67 @@ EventPacket CC_EventLoop_DeserializePacket(EventLoop* loop, uint8_t* data, size_
             }
             break;
         }
+        case CC_PACKET_TYPE_LOGIN: {
+            if(loop->server) {
+                assert(gp->packet_content_case == GENERAL_PACKET__PACKET_CONTENT_LOGIN_PACKET_CS);
+                packet.data.login_cs.username.length = gp->login_packet_cs->username->length;
+                packet.data.login_cs.username.data = malloc(packet.data.login_cs.username.length);
+                memcpy(packet.data.login_cs.username.data, gp->login_packet_cs->username->data.data, packet.data.login_cs.username.length);
+
+                packet.data.login_cs.password.length = gp->login_packet_cs->password->length;
+                packet.data.login_cs.password.data = malloc(packet.data.login_cs.password.length);
+                memcpy(packet.data.login_cs.password.data, gp->login_packet_cs->password->data.data, packet.data.login_cs.password.length);
+
+                packet.data.login_cs.protocol_version = gp->login_packet_cs->protocol_version;
+                packet.data.login_cs.dimension = gp->login_packet_cs->dimension;
+                packet.data.login_cs.seed = gp->login_packet_cs->seed;
+            } else {
+                assert(gp->packet_content_case == GENERAL_PACKET__PACKET_CONTENT_LOGIN_PACKET_SC);
+                memcpy(packet.data.login_sc.zeroes, gp->login_packet_sc->zeroes.data, 8);
+            }
+            break;
+        }
+
+        case CC_PACKET_TYPE_SPAWN_POSITION: {
+            if(!loop->server) {
+                assert(gp->packet_content_case == GENERAL_PACKET__PACKET_CONTENT_SPAWN_POSITION_PACKET_SC);
+                packet.data.spawn_position.x = gp->spawn_position_packet_sc->x;
+                packet.data.spawn_position.y = gp->spawn_position_packet_sc->y;
+                packet.data.spawn_position.z = gp->spawn_position_packet_sc->z;
+            }
+            break;
+        }
+
+        case CC_PACKET_TYPE_UPDATE_HEALTH: {
+            if(!loop->server) {
+                assert(gp->packet_content_case == GENERAL_PACKET__PACKET_CONTENT_UPDATE_HEALTH_PACKET_SC);
+                packet.data.update_health.health = gp->update_health_packet_sc->health;
+            }
+            break;
+        }
+
+        case CC_PACKET_TYPE_PLAYER_POSITION_AND_LOOK: {
+            if(loop->server) {
+                // This is CS
+                assert(gp->packet_content_case == GENERAL_PACKET__PACKET_CONTENT_PLAYER_POSITION_AND_LOOK_CS);
+                packet.data.player_position_and_look_cs.x = gp->player_position_and_look_cs->x;
+                packet.data.player_position_and_look_cs.y = gp->player_position_and_look_cs->y;
+                packet.data.player_position_and_look_cs.z = gp->player_position_and_look_cs->z;
+                packet.data.player_position_and_look_cs.yaw = gp->player_position_and_look_cs->yaw;
+                packet.data.player_position_and_look_cs.pitch = gp->player_position_and_look_cs->pitch;
+                packet.data.player_position_and_look_cs.on_ground = gp->player_position_and_look_cs->on_ground;
+            } else {
+                // This is SC
+                assert(gp->packet_content_case == GENERAL_PACKET__PACKET_CONTENT_PLAYER_POSITION_AND_LOOK_SC);
+                packet.data.player_position_and_look_sc.x = gp->player_position_and_look_sc->x;
+                packet.data.player_position_and_look_sc.y = gp->player_position_and_look_sc->y;
+                packet.data.player_position_and_look_sc.z = gp->player_position_and_look_sc->z;
+                packet.data.player_position_and_look_sc.yaw = gp->player_position_and_look_sc->yaw;
+                packet.data.player_position_and_look_sc.pitch = gp->player_position_and_look_sc->pitch;
+                packet.data.player_position_and_look_sc.on_ground = gp->player_position_and_look_sc->on_ground;
+            }
+            break;
+        }
 
         default: {
             printf("Unhandled Packet type: %d\n", gp->packet_type);
@@ -94,20 +234,6 @@ EventPacket CC_EventLoop_DeserializePacket(EventLoop* loop, uint8_t* data, size_
 
     general_packet__free_unpacked(gp, NULL);
     return packet;
-}
-
-void CC_EventLoop_FreePacket(EventPacket packet) {
-    switch(packet.type) {
-        case CC_PACKET_TYPE_HANDSHAKE: {
-            free(packet.data.handshake_cs.username.data);
-            break;
-        }
-
-        default: {
-            printf("Unhandled Packet type: %d\n", packet.type);
-            break;
-        }
-    }
 }
 
 size_t CC_EventLoop_SerializePacket(EventLoop* loop, EventPacket packet, uint8_t** data) {
@@ -154,6 +280,120 @@ size_t CC_EventLoop_SerializePacket(EventLoop* loop, EventPacket packet, uint8_t
             break;
         }
 
+        case CC_PACKET_TYPE_LOGIN: {
+            if(loop->server) {
+                gp.packet_type = PACKET_TYPE__CC_PACKET_TYPE_LOGIN;
+                gp.packet_content_case = GENERAL_PACKET__PACKET_CONTENT_LOGIN_PACKET_SC;
+                LoginPacketSC lsc = LOGIN_PACKET_SC__INIT;
+                lsc.zeroes.len = 8;
+                lsc.zeroes.data = malloc(8);
+                memcpy(lsc.zeroes.data, packet.data.login_sc.zeroes, 8);
+                gp.login_packet_sc = &lsc;
+                size = general_packet__get_packed_size(&gp);
+                *data = malloc(size);
+                general_packet__pack(&gp, *data);
+                free(lsc.zeroes.data);
+            } else {
+                gp.packet_type = PACKET_TYPE__CC_PACKET_TYPE_LOGIN;
+                gp.packet_content_case = GENERAL_PACKET__PACKET_CONTENT_LOGIN_PACKET_CS;
+                LoginPacketCS lcs = LOGIN_PACKET_CS__INIT;
+
+                NetString username = NET_STRING__INIT;
+                username.length = packet.data.login_cs.username.length;
+                username.data.len = packet.data.login_cs.username.length;
+                username.data.data = malloc(packet.data.login_cs.username.length);
+                memcpy(username.data.data, packet.data.login_cs.username.data, packet.data.login_cs.username.length);
+                lcs.username = &username;
+
+                NetString password = NET_STRING__INIT;
+                password.length = packet.data.login_cs.password.length;
+                password.data.len = packet.data.login_cs.password.length;
+                password.data.data = malloc(packet.data.login_cs.password.length);
+                memcpy(password.data.data, packet.data.login_cs.password.data, packet.data.login_cs.password.length);
+                lcs.password = &password;
+
+                lcs.protocol_version = packet.data.login_cs.protocol_version;
+                lcs.dimension = packet.data.login_cs.dimension;
+                lcs.seed = packet.data.login_cs.seed;
+
+                gp.login_packet_cs = &lcs;
+                size = general_packet__get_packed_size(&gp);
+                *data = malloc(size);
+                general_packet__pack(&gp, *data);
+                free(lcs.username->data.data);
+                free(lcs.password->data.data);
+            }
+            break;
+        }
+
+        case CC_PACKET_TYPE_SPAWN_POSITION: {
+            if(loop->server) {
+                gp.packet_type = PACKET_TYPE__CC_PACKET_TYPE_SPAWN_POSITION;
+                gp.packet_content_case = GENERAL_PACKET__PACKET_CONTENT_SPAWN_POSITION_PACKET_SC;
+                SpawnPositionPacketSC spsc = SPAWN_POSITION_PACKET_SC__INIT;
+                spsc.x = packet.data.spawn_position.x;
+                spsc.y = packet.data.spawn_position.y;
+                spsc.z = packet.data.spawn_position.z;
+
+                gp.spawn_position_packet_sc = &spsc;
+                size = general_packet__get_packed_size(&gp);
+                *data = malloc(size);
+                general_packet__pack(&gp, *data);
+            }
+            break;
+        }
+
+        case CC_PACKET_TYPE_UPDATE_HEALTH: {
+            if(loop->server) {
+                gp.packet_type = PACKET_TYPE__CC_PACKET_TYPE_UPDATE_HEALTH;
+                gp.packet_content_case = GENERAL_PACKET__PACKET_CONTENT_UPDATE_HEALTH_PACKET_SC;
+                UpdateHealthPacketSC uhp = UPDATE_HEALTH_PACKET_SC__INIT;
+                uhp.health = packet.data.update_health.health;
+
+                gp.update_health_packet_sc = &uhp;
+                size = general_packet__get_packed_size(&gp);
+                *data = malloc(size);
+                general_packet__pack(&gp, *data);
+            }
+            break;
+        }
+
+        case CC_PACKET_TYPE_PLAYER_POSITION_AND_LOOK: {
+            if(!loop->server) {
+                //Client packet
+                gp.packet_type = PACKET_TYPE__CC_PACKET_TYPE_PLAYER_POSITION_AND_LOOK;
+                gp.packet_content_case = GENERAL_PACKET__PACKET_CONTENT_PLAYER_POSITION_AND_LOOK_CS;
+                PlayerPositionAndLookCS ppls = PLAYER_POSITION_AND_LOOK_CS__INIT;
+                ppls.x = packet.data.player_position_and_look_cs.x;
+                ppls.y = packet.data.player_position_and_look_cs.y;
+                ppls.z = packet.data.player_position_and_look_cs.z;
+                ppls.yaw = packet.data.player_position_and_look_cs.yaw;
+                ppls.pitch = packet.data.player_position_and_look_cs.pitch;
+                ppls.on_ground = packet.data.player_position_and_look_cs.on_ground;
+
+                gp.player_position_and_look_cs = &ppls;
+                size = general_packet__get_packed_size(&gp);
+                *data = malloc(size);
+                general_packet__pack(&gp, *data);
+            } else {
+                gp.packet_type = PACKET_TYPE__CC_PACKET_TYPE_PLAYER_POSITION_AND_LOOK;
+                gp.packet_content_case = GENERAL_PACKET__PACKET_CONTENT_PLAYER_POSITION_AND_LOOK_SC;
+                PlayerPositionAndLookSC ppls = PLAYER_POSITION_AND_LOOK_SC__INIT;
+                ppls.x = packet.data.player_position_and_look_sc.x;
+                ppls.y = packet.data.player_position_and_look_sc.y;
+                ppls.z = packet.data.player_position_and_look_sc.z;
+                ppls.yaw = packet.data.player_position_and_look_sc.yaw;
+                ppls.pitch = packet.data.player_position_and_look_sc.pitch;
+                ppls.on_ground = packet.data.player_position_and_look_sc.on_ground;
+
+                gp.player_position_and_look_sc = &ppls;
+                size = general_packet__get_packed_size(&gp);
+                *data = malloc(size);
+                general_packet__pack(&gp, *data);
+            }
+            break;
+        }
+
         default: {
             printf("Unhandled Packet type: %d\n", packet.type);
             break;
@@ -161,52 +401,4 @@ size_t CC_EventLoop_SerializePacket(EventLoop* loop, EventPacket packet, uint8_t
     }
 
     return size;
-}
-
-void CC_EventLoop_Update(EventLoop* loop) {
-    // Serialize inbound packets
-    size_t input_length;
-    uint8_t* data = NULL;
-    while((input_length = loop->inbound_bus->read(&data, loop->inbound_context)) != 0) {
-        EventPacket packet = CC_EventLoop_DeserializePacket(loop, data, input_length);
-        CC_EventLoop_PushPacketInbound(loop, &packet);
-        CC_EventLoop_FreePacket(packet);
-        free(data);
-    }
-
-    // Handle inbound packets
-    for(size_t i = 0; i < loop->inbound_events.length; i++) {
-        EventPacket packet = loop->inbound_events.packets[i];
-        EventMapping* emap = &loop->mapping[packet.type];
-        for(size_t j = 0; j < emap->count; j++) {
-            emap->handlers[j](loop, &packet);
-        }
-    }
-    loop->inbound_events.length = 0;
-
-    // Handle outbound packets
-    for(size_t i = 0; i < loop->outbound_events.length; i++) {
-        EventPacket packet = loop->outbound_events.packets[i];
-        size_t output_length;
-        uint8_t* out_data = NULL;
-        output_length = CC_EventLoop_SerializePacket(loop, packet, &out_data);
-        loop->outbound_bus->write(out_data, output_length, loop->outbound_context);
-        free(out_data);
-        CC_EventLoop_FreePacket(packet);
-    }
-    loop->outbound_events.length = 0;
-}
-
-void CC_EventLoop_SetInboundBus(EventLoop* loop, DataBus* bus, void* context) {
-    loop->inbound_bus = bus;
-    loop->inbound_context = context;
-}
-
-void CC_EventLoop_SetOutboundBus(EventLoop* loop, DataBus* bus, void* context) {
-    loop->outbound_bus = bus;
-    loop->outbound_context = context;
-}
-
-void CC_EventLoop_SetServer(EventLoop* loop, bool server) {
-    loop->server = server;
 }
