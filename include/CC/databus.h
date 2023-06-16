@@ -36,7 +36,6 @@ void SharedDataBus_Destroy(SharedDataBus* bus);
 size_t SharedDataBus_Read(uint8_t** data, void* context);
 size_t SharedDataBus_Write(uint8_t* data, size_t size, void* context);
 
-
 #ifdef __cplusplus
 }
 #endif

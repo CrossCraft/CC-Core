@@ -1,6 +1,8 @@
 #include <CC/databus.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
+#include <CC/alphaindev.pb-c.h>
 
 SharedDataBus* SharedDataBus_Init(void) {
     SharedDataBus *bus = malloc(sizeof(SharedDataBus));
@@ -52,6 +54,21 @@ size_t SharedDataBus_Read(uint8_t** data, void* context) {
     return length;
 }
 
+void printHexBuffer(const uint8_t* buffer, size_t size) {
+    printf("Buffer: ");
+    for (size_t i = 0; i < size; ++i) {
+        printf("%02X ", buffer[i]);
+    }
+    printf("\n");
+
+
+    printf("ASCII Buffer: ");
+    for (size_t i = 0; i < size; ++i) {
+        printf("%c ", buffer[i]);
+    }
+    printf("\n");
+}
+
 size_t SharedDataBus_Write(uint8_t* data, size_t size, void* context) {
     if(context == NULL) {
         return 0;
@@ -71,6 +88,8 @@ size_t SharedDataBus_Write(uint8_t* data, size_t size, void* context) {
 
     // Copy message data
     memcpy(&bus->sharedMemoryData.data[bus->sharedMemoryData.messageWriteOffset + sizeof(size_t)], data, size);
+
+    //printHexBuffer(&bus->sharedMemoryData.data[bus->sharedMemoryData.messageWriteOffset], sizeof(size_t) + size);
 
     // Update offsets
     bus->sharedMemoryData.messagesReady++;

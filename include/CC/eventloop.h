@@ -63,44 +63,55 @@ typedef struct {
     size_t capacity;
 } EventList;
 
-
-typedef void (*EventHandler)(EventPacket* packet);
+typedef void (*EventHandler)(void* loop, EventPacket* packet);
 
 typedef struct {
     size_t count;
     EventHandler* handlers;
 } EventMapping;
 
+typedef struct {
+    DataBus* inbound_bus;
+    DataBus* outbound_bus;
+    void* inbound_context;
+    void* outbound_context;
+    EventList inbound_events;
+    EventList outbound_events;
+    EventMapping mapping[256];
+    bool server;
+} EventLoop;
+
 /**
  * Initializes the event loop.
- * This function must be called before any other event loop functions.
+ * This function must be called before the event loop is used.
+ * @return The event loop.
  */
-void CC_EventLoop_Init(void);
+EventLoop* CC_EventLoop_Init(void);
 
 /**
  * Shuts down the event loop.
  * This function must be called before the program exits.
  */
-void CC_EventLoop_Shutdown(void);
+void CC_EventLoop_Destroy(EventLoop* loop);
 
 /**
  * Registers a handler for a packet type.
  * @param type One of the PacketType enum values.
  * @param handler The handler function.
  */
-void CC_EventLoop_RegisterHandler(EP_PacketType type, EventHandler handler);
+void CC_EventLoop_RegisterHandler(EventLoop* loop, EP_PacketType type, EventHandler handler);
 
 /**
  * Pushes a packet into the event loop.
  * @param packet The packet to push.
  */
-void CC_EventLoop_PushPacketInbound(EventPacket* packet);
+void CC_EventLoop_PushPacketInbound(EventLoop* loop, EventPacket* packet);
 
 /**
  * Pushes a packet into the event loop.
  * @param packet The packet to push.
  */
-void CC_EventLoop_PushPacketOutbound(EventPacket* packet);
+void CC_EventLoop_PushPacketOutbound(EventLoop* loop, EventPacket* packet);
 
 /**
  * Deserializes a packet from a byte array.
@@ -108,13 +119,13 @@ void CC_EventLoop_PushPacketOutbound(EventPacket* packet);
  * @param size The size of the byte array.
  * @return The deserialized packet.
  */
-EventPacket* CC_EventLoop_DeserializePacket(uint8_t* data, size_t size);
+EventPacket CC_EventLoop_DeserializePacket(EventLoop* loop, uint8_t* data, size_t size);
 
 /**
  * Frees a packet.
  * @param packet The packet to free.
  */
-void CC_EventLoop_FreePacket(EventPacket* packet);
+void CC_EventLoop_FreePacket(EventPacket packet);
 
 /**
  * Serializes a packet into a byte array.
@@ -122,13 +133,13 @@ void CC_EventLoop_FreePacket(EventPacket* packet);
  * @param data Pointer to the byte array. This will be allocated by the function.
  * @return The size of the byte array.
  */
-size_t CC_EventLoop_SerializePacket(EventPacket* packet, uint8_t** data);
+size_t CC_EventLoop_SerializePacket(EventLoop* loop, EventPacket packet, uint8_t** data);
 
 /**
  * Sets whether the event loop is running on the server.
  * @param server Set to true if the event loop is running on the server.
  */
-void CC_EventLoop_SetServer(bool server);
+void CC_EventLoop_SetServer(EventLoop* loop, bool server);
 
 /**
  * Updates the event loop.
@@ -136,13 +147,19 @@ void CC_EventLoop_SetServer(bool server);
  * This function will call the handlers for all packets in the inbound queue.
  * This function will also send all packets in the outbound queue.
  */
-void CC_EventLoop_Update(void);
+void CC_EventLoop_Update(EventLoop* loop);
 
 /**
  * Sets the data bus for the event loop.
  * @param bus The data bus.
  */
-void CC_EventLoop_SetBus(DataBus* bus);
+void CC_EventLoop_SetInboundBus(EventLoop* loop, DataBus* bus, void* context);
+
+/**
+ * Sets the data bus for the event loop.
+ * @param bus The data bus.
+ */
+void CC_EventLoop_SetOutboundBus(EventLoop* loop, DataBus* bus, void* context);
 
 #ifdef __cplusplus
 }
