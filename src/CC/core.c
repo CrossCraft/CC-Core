@@ -8,7 +8,7 @@
 static EventLoop * CC_GLOBAL_event_loop = NULL;
 
 void CC_Core_Init(void) {
-    CC_World_Init(1024, 64, 1024);
+    CC_World_Init(256, 64, 256);
 
     if(!CC_World_Load()) {
         CC_World_Generate();

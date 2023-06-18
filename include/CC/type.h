@@ -169,16 +169,16 @@ extern const item_t ITM_Cooked_Porkchop;
 extern const item_t ITM_Painting;
 
 // Default lighting color
-extern const uint16_t LIGHT_TOP;
-extern const uint16_t LIGHT_SIDE_X;
-extern const uint16_t LIGHT_SIDE_Z;
-extern const uint16_t LIGHT_BOT;
+extern const uint32_t LIGHT_TOP;
+extern const uint32_t LIGHT_SIDE_X;
+extern const uint32_t LIGHT_SIDE_Z;
+extern const uint32_t LIGHT_BOT;
 
 // When dark block color tint is multiplied by 0.6
-extern const uint16_t LIGHT_TOP_DARK;
-extern const uint16_t LIGHT_SIDE_X_DARK;
-extern const uint16_t LIGHT_SIDE_Z_DARK;
-extern const uint16_t LIGHT_BOT_DARK;
+extern const uint32_t LIGHT_TOP_DARK;
+extern const uint32_t LIGHT_SIDE_X_DARK;
+extern const uint32_t LIGHT_SIDE_Z_DARK;
+extern const uint32_t LIGHT_BOT_DARK;
 
 /**
  * @brief Block face direction
