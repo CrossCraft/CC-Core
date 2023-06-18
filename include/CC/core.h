@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-void CC_Core_Init();
+void CC_Core_Init(void);
 
 void CC_Core_SetEventLoop(EventLoop * event_loop);
 
