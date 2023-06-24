@@ -116,12 +116,6 @@ const item_t ITM_Cooked_Porkchop = 320;
 const item_t ITM_Painting = 321;
 
 const uint32_t LIGHT_TOP = 0xFFFFFFFF;
-const uint32_t LIGHT_SIDE_X = 0xFF999999;
-const uint32_t LIGHT_SIDE_Z = 0xFFCCCCCC;
+const uint32_t LIGHT_SIDE_X = 0xFFCCCCCC;
+const uint32_t LIGHT_SIDE_Z = 0xFF999999;
 const uint32_t LIGHT_BOT = 0xFF7F7F7F;
-
-// When dark block color tint is multiplied by 0.6
-const uint32_t LIGHT_TOP_DARK = 0xFF999999;
-const uint32_t LIGHT_SIDE_X_DARK = 0xFF5C5C5C;
-const uint32_t LIGHT_SIDE_Z_DARK = 0xFF7A7A7A;
-const uint32_t LIGHT_BOT_DARK = 0xFF4C4C4C;
