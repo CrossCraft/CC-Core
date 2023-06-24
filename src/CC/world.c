@@ -83,6 +83,7 @@ void growTree(int x, int y, int z, int height) {
     for (int i = 0; i < height; i++) {
         setBlock(x, y + i, z, BLK_Logs);
     }
+    setBlock(x, y + height, z, BLK_Leaves);
 }
 
 void CC_World_Make_Tree(size_t ix, size_t iy, size_t iz) {
