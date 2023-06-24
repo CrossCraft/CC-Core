@@ -16,6 +16,8 @@ void CC_Core_Update(double delta_time);
 
 void CC_Core_Term(void);
 
+EventLoop* CC_Core_GetEventLoop(void);
+
 #ifdef __cplusplus
 }
 #endif

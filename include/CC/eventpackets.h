@@ -13,6 +13,10 @@ EventPacket CC_EventPacket_Create_SpawnPosition(int x, int y, int z);
 EventPacket CC_EventPacket_Create_PlayerPositionAndLookServer(float x, float y, float z, float yaw, float pitch, bool on_ground);
 EventPacket CC_EventPacket_Create_UpdateHealthServer(void);
 
+EventPacket CC_EventPacket_Create_PlayerPositionAndLookClient(float x, float y, float z, float yaw, float pitch, bool on_ground);
+
+EventPacket CC_EventPacket_Create_PlayerRespawn(void);
+
 #ifdef __cplusplus
 }
 #endif

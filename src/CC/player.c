@@ -2,6 +2,9 @@
 #include <CC/event.h>
 #include <stdio.h>
 #include <CC/world.h>
+#include <CC/eventloop.h>
+#include <CC/eventpackets.h>
+#include <CC/core.h>
 
 static PlayerData CC_GLOBAL_player_data;
 static bool CC_Is_First_Spawn = true;
@@ -56,7 +59,7 @@ void CC_Player_SetOnGround(bool on_ground) {
     CC_GLOBAL_player_data.on_ground = on_ground;
 }
 
-const PlayerData* CC_Player_GetData(void) {
+PlayerData* CC_Player_GetData(void) {
     return &CC_GLOBAL_player_data;
 }
 
@@ -77,7 +80,9 @@ void CC_Player_Check_FallDamage(void) {
                     if(CC_GLOBAL_player_data.health <= 0) {
                         CC_GLOBAL_player_data.health = 0;
                     }
-                    CC_Event_Push_SetPlayerHealth(CC_GLOBAL_player_data.health);
+
+                    EventPacket updateHealth = CC_EventPacket_Create_UpdateHealthServer();
+                    CC_EventLoop_PushPacketOutbound(CC_Core_GetEventLoop(), &updateHealth);
                 }
             }
         }
@@ -101,7 +106,8 @@ void CC_Player_Check_Drown(void) {
                     CC_GLOBAL_player_data.health = 0;
                 }
 
-                CC_Event_Push_SetPlayerHealth(CC_GLOBAL_player_data.health);
+                EventPacket updateHealth = CC_EventPacket_Create_UpdateHealthServer();
+                CC_EventLoop_PushPacketOutbound(CC_Core_GetEventLoop(), &updateHealth);
             }
         } else {
             CC_GLOBAL_player_data.air = 300;
@@ -132,11 +138,7 @@ void CC_Player_Respawn(void) {
     CC_GLOBAL_player_data.health = 20;
     CC_GLOBAL_player_data.air = 300;
 
-    CC_Event_Push_SetPlayerHealth(CC_GLOBAL_player_data.health);
-
     if(CC_Is_First_Spawn) {
         CC_Is_First_Spawn = false;
-    } else {
-        CC_Event_Push_PlayerUpdate(255, CC_GLOBAL_player_data.x, CC_GLOBAL_player_data.y, CC_GLOBAL_player_data.z, CC_GLOBAL_player_data.pitch, CC_GLOBAL_player_data.yaw, CC_GLOBAL_player_data.on_ground);
     }
 }

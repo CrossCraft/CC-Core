@@ -203,6 +203,10 @@ EventPacket CC_EventLoop_DeserializePacket(EventLoop* loop, uint8_t* data, size_
             break;
         }
 
+        case CC_PACKET_TYPE_RESPAWN: {
+            break;
+        }
+
         case CC_PACKET_TYPE_PLAYER_POSITION_AND_LOOK: {
             if(loop->server) {
                 // This is CS
@@ -241,6 +245,17 @@ size_t CC_EventLoop_SerializePacket(EventLoop* loop, EventPacket packet, uint8_t
     size_t size = 0;
 
     switch(packet.type) {
+        case CC_PACKET_TYPE_RESPAWN: {
+            gp.packet_type = PACKET_TYPE__CC_PACKET_TYPE_RESPAWN;
+            gp.packet_content_case = GENERAL_PACKET__PACKET_CONTENT_RESPAWN_DATA_SC;
+            RespawnDataSC rsp = RESPAWN_DATA_SC__INIT;
+            gp.respawn_data_sc = &rsp;
+            size = general_packet__get_packed_size(&gp);
+            *data = malloc(size);
+            general_packet__pack(&gp, *data);
+            break;
+        }
+
         case CC_PACKET_TYPE_HANDSHAKE: {
             if(loop->server) {
                 gp.packet_type = PACKET_TYPE__CC_PACKET_TYPE_HANDSHAKE;

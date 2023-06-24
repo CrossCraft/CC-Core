@@ -70,6 +70,7 @@ float randFloat(void) {
 }
 
 void CC_Event_Handle_InBound_Client(void) {
+    /*
     CC_Event* event;
 
     while ((event = CC_Event_Poll_Internal()) != NULL) {
@@ -110,16 +111,6 @@ void CC_Event_Handle_InBound_Client(void) {
 
                 CC_Entity_Destroy(event->data.destroy_entity.eid);
                 CC_EventQueue_Transfer(event, &CC_Event_QueueOut);
-                break;
-            }
-
-            case CC_EVENT_PLAYER_RESPAWN: {
-                #if EVENT_DEBUG
-                printf("EVENT DEBUG: Player Respawn Event:\n");
-                #endif
-
-                CC_Player_Respawn();
-
                 break;
             }
 
@@ -165,6 +156,7 @@ void CC_Event_Handle_InBound_Client(void) {
             }
         }
     }
+    */
 }
 
 void CC_Event_Push_SpawnItem(Item item_data, float x, float y, float z, float vx, float vy, float vz) {
@@ -200,21 +192,6 @@ void CC_Event_Push_EntityTeleport(uint16_t eid, float x, float y, float z, float
     CC_EventQueue_Transfer(&event, &CC_Event_QueueOut);
 }
 
-void CC_Event_Push_PlayerUpdate(uint8_t playerID, float x, float y, float z, float pitch, float yaw, bool on_ground) {
-    CC_Event event;
-
-    event.type = CC_EVENT_PLAYER_UPDATE;
-    event.data.player_update.playerID = playerID;
-    event.data.player_update.x = x;
-    event.data.player_update.y = y;
-    event.data.player_update.z = z;
-    event.data.player_update.pitch = pitch;
-    event.data.player_update.yaw = yaw;
-    event.data.player_update.on_ground = on_ground;
-
-    CC_Event_Push(&event);
-}
-
 void CC_Event_Push_SetBlock(uint16_t x, uint16_t y, uint16_t z, uint8_t mode, block_t block) {
     CC_Event event;
 
@@ -244,12 +221,4 @@ void CC_Event_Push_SetPlayerHealth(uint16_t health) {
     event.data.set_player_health.health = health;
 
     CC_EventQueue_Transfer(&event, &CC_Event_QueueOut);
-}
-
-void CC_Event_Push_PlayerRespawn(void) {
-    CC_Event event;
-
-    event.type = CC_EVENT_PLAYER_RESPAWN;
-
-    CC_Event_Push(&event);
 }

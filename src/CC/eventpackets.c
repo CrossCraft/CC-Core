@@ -60,6 +60,24 @@ EventPacket CC_EventPacket_Create_SpawnPosition(int x, int y, int z) {
     return packet;
 }
 
+EventPacket CC_EventPacket_Create_PlayerPositionAndLookClient(float x, float y, float z, float yaw, float pitch, bool on_ground) {
+    EventPacket packet;
+    packet.type = CC_PACKET_TYPE_PLAYER_POSITION_AND_LOOK;
+    packet.data.player_position_and_look_cs.x = x;
+    packet.data.player_position_and_look_cs.y = y;
+    packet.data.player_position_and_look_cs.z = z;
+    packet.data.player_position_and_look_cs.yaw = yaw;
+    packet.data.player_position_and_look_cs.pitch = pitch;
+    packet.data.player_position_and_look_cs.on_ground = on_ground;
+    return packet;
+}
+
+EventPacket CC_EventPacket_Create_PlayerRespawn(void) {
+    EventPacket packet;
+    packet.type = CC_PACKET_TYPE_RESPAWN;
+    return packet;
+}
+
 EventPacket CC_EventPacket_Create_PlayerPositionAndLookServer(float x, float y, float z, float yaw, float pitch, bool on_ground) {
     EventPacket packet;
     packet.type = CC_PACKET_TYPE_PLAYER_POSITION_AND_LOOK;
