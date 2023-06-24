@@ -24,8 +24,14 @@ void CC_World_Init(size_t x, size_t y, size_t z) {
 
     FNL_GLOBAL_state = fnlCreateState();
     FNL_GLOBAL_state.seed = CC_GLOBAL_world_seed;
-    FNL_GLOBAL_state.noise_type = FNL_NOISE_PERLIN;
-    FNL_GLOBAL_state.frequency = 0.02f;
+    FNL_GLOBAL_state.noise_type = FNL_NOISE_VALUE_CUBIC;
+    FNL_GLOBAL_state.frequency = 0.03f;
+
+    FNL_GLOBAL_state.fractal_type = FNL_FRACTAL_FBM;
+    FNL_GLOBAL_state.octaves = 3;
+    FNL_GLOBAL_state.lacunarity = 2.0f;
+    FNL_GLOBAL_state.gain = 0.5f;
+
 }
 
 void CC_World_Term(void) {
@@ -120,7 +126,7 @@ void CC_World_Generate(void) {
     for(z = 0; z < CC_GLOBAL_world_data.z; z++) {
         for(x = 0; x < CC_GLOBAL_world_data.x; x++) {
             float normalized = (fnlGetNoise2D(&FNL_GLOBAL_state, x, z) * 0.5f + 0.5f); //Bounded 0.0f to 1.0f
-            noiseMap[z * CC_GLOBAL_world_data.x + x] = (normalized * 0.5f + 0.25f) * WORLD_HEIGHT; //Bounded 0.25f to 0.75f of WORLD_HEIGHT
+            noiseMap[z * CC_GLOBAL_world_data.x + x] = normalized * WORLD_HEIGHT;
             // AKA 16.0f to 48.0f
         }
     }
