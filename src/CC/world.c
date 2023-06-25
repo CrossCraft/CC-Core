@@ -200,7 +200,6 @@ void CC_World_Generate(void) {
 	    CC_World_SetSunLightFast(x, WORLD_HEIGHT - 1, z, 15);
 	}
 	float percent = (float)x / (float)CC_GLOBAL_world_data.x * 100.0f;
-	printf("Lighting %.3f%%\n", percent);
     }
 
     free(noiseMap);
