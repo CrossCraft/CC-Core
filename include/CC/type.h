@@ -28,6 +28,7 @@ typedef struct {
 typedef struct {
     size_t x, y, z;
     block_t* blocks;
+    uint8_t* lightmap;
 } WorldData;
 
 // Player data structure
