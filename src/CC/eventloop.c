@@ -135,6 +135,12 @@ void CC_EventLoop_FreePacket(EventPacket packet, bool cs) {
         case CC_PACKET_TYPE_PLAYER_POSITION_AND_LOOK: {
             break;
         }
+        case CC_PACKET_TYPE_PLAYER_DIGGING: {
+            break;
+        }
+        case CC_PACKET_TYPE_BLOCK_CHANGE: {
+            break;
+        }
 
         default: {
             printf("Unhandled Packet type: %d\n", packet.type);
@@ -231,7 +237,18 @@ EventPacket CC_EventLoop_DeserializePacket(EventLoop* loop, uint8_t* data, size_
             break;
         }
 
-        case CC_PACKET_TYPE_PLAYER_POSITION_AND_LOOK: {
+        case CC_PACKET_TYPE_BLOCK_CHANGE: {
+            if(!loop->server) {
+                assert(gp->packet_content_case == GENERAL_PACKET__PACKET_CONTENT_BLOCK_CHANGE_PACKET_SC);
+                packet.data.block_change_sc.x = gp->block_change_sc->x;
+                packet.data.block_change_sc.y = gp->block_change_sc->y;
+                packet.data.block_change_sc.z = gp->block_change_sc->z;
+                packet.data.block_change_sc.type = gp->block_change_sc->type;
+            }
+            break;
+        }
+
+            case CC_PACKET_TYPE_PLAYER_POSITION_AND_LOOK: {
             if(loop->server) {
                 // This is CS
                 assert(gp->packet_content_case == GENERAL_PACKET__PACKET_CONTENT_PLAYER_POSITION_AND_LOOK_CS);
@@ -315,6 +332,23 @@ size_t CC_EventLoop_SerializePacket(EventLoop* loop, EventPacket packet, uint8_t
                 *data = malloc(size);
                 general_packet__pack(&gp, *data);
                 free(hcs.username->data.data);
+            }
+            break;
+        }
+
+        case CC_PACKET_TYPE_BLOCK_CHANGE: {
+            if(loop->server) {
+                gp.packet_type = PACKET_TYPE__CC_PACKET_TYPE_BLOCK_CHANGE;
+                gp.packet_content_case = GENERAL_PACKET__PACKET_CONTENT_BLOCK_CHANGE_SC;
+                BlockChangeSC bsc = BLOCK_CHANGE_SC__INIT;
+                bsc.x = packet.data.block_change_sc.x;
+                bsc.y = packet.data.block_change_sc.y;
+                bsc.z = packet.data.block_change_sc.z;
+                bsc.type = packet.data.block_change_sc.type;
+                gp.block_change_sc = &bsc;
+                size = general_packet__get_packed_size(&gp);
+                *data = malloc(size);
+                general_packet__pack(&gp, *data);
             }
             break;
         }

@@ -18,6 +18,8 @@ EventPacket CC_EventPacket_Create_PlayerRespawn(void);
 EventPacket CC_EventPacket_Create_PlayerDigging(int x, int y, int z, int face, int status);
 EventPacket CC_EventPacket_Create_PlayerPlace(int x, int y, int z, int face, int item_id);
 
+EventPacket CC_EventPacket_Create_BlockChange(int x, int y, int z, int block_id);
+
 #ifdef __cplusplus
 }
 #endif

@@ -78,6 +78,16 @@ EventPacket CC_EventPacket_Create_PlayerRespawn(void) {
     return packet;
 }
 
+EventPacket CC_EventPacket_Create_BlockChange(int x, int y, int z, int block_id) {
+    EventPacket packet;
+    packet.type = CC_PACKET_TYPE_BLOCK_CHANGE;
+    packet.data.block_change_sc.x = x;
+    packet.data.block_change_sc.y = y;
+    packet.data.block_change_sc.z = z;
+    packet.data.block_change_sc.type = block_id;
+    return packet;
+}
+
 EventPacket CC_EventPacket_Create_PlayerPositionAndLookServer(float x, float y, float z, float yaw, float pitch, bool on_ground) {
     EventPacket packet;
     packet.type = CC_PACKET_TYPE_PLAYER_POSITION_AND_LOOK;
