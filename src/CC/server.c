@@ -61,8 +61,18 @@ void CC_Server_Handle_Handshake(void* loop, EventPacket* packet) {
 }
 
 void CC_Server_Handle_PlayerDigging(void* loop, EventPacket* packet) {
+    block_t block;
+    CC_World_TryGetBlock(packet->data.player_digging_cs.x, packet->data.player_digging_cs.y, packet->data.player_digging_cs.z, &block);
+
     if(packet->data.player_digging_cs.status == BREAK_FINISH) {
         CC_World_SetBlock(packet->data.player_digging_cs.x, packet->data.player_digging_cs.y, packet->data.player_digging_cs.z, 0);
+
+	if(block == BLK_Flower1) {
+		CC_World_RemoveLight(packet->data.player_place_cs.x, packet->data.player_place_cs.y, packet->data.player_place_cs.z);
+	} else if(block != BLK_Air && block != BLK_Water && block != BLK_Glass && block != BLK_Leaves && block != BLK_Mushroom2 && block != BLK_Mushroom1 && block!= BLK_Flower2) {
+		CC_World_RemoveLight(packet->data.player_place_cs.x, packet->data.player_place_cs.y, packet->data.player_place_cs.z);
+	}
+
         EventPacket block_change = CC_EventPacket_Create_BlockChange(packet->data.player_digging_cs.x, packet->data.player_digging_cs.y, packet->data.player_digging_cs.z, 0);
         CC_EventLoop_PushPacketOutbound(loop, &block_change);
     }
@@ -70,6 +80,14 @@ void CC_Server_Handle_PlayerDigging(void* loop, EventPacket* packet) {
 
 void CC_Server_Handle_PlayerBlockPlacement(void* loop, EventPacket* packet) {
     CC_World_SetBlock(packet->data.player_place_cs.x, packet->data.player_place_cs.y, packet->data.player_place_cs.z, packet->data.player_place_cs.item_id);
+
+    block_t block = packet->data.player_place_cs.item_id;
+    if(block == BLK_Flower1) {
+	CC_World_SetLight(packet->data.player_place_cs.x, packet->data.player_place_cs.y, packet->data.player_place_cs.z, 15);
+    } else if(block != BLK_Air && block != BLK_Water && block != BLK_Glass && block != BLK_Leaves && block != BLK_Mushroom2 && block != BLK_Mushroom1 && block!= BLK_Flower2) {
+	CC_World_RemoveLight(packet->data.player_place_cs.x, packet->data.player_place_cs.y, packet->data.player_place_cs.z);
+    }
+
     EventPacket block_change = CC_EventPacket_Create_BlockChange(packet->data.player_place_cs.x, packet->data.player_place_cs.y, packet->data.player_place_cs.z, packet->data.player_place_cs.item_id);
     CC_EventLoop_PushPacketOutbound(loop, &block_change);
 }

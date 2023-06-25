@@ -3,7 +3,7 @@ project(CC-Core)
 
 set(CMAKE_C_STANDARD 11)
 
-file(GLOB_RECURSE CC_CORE_SOURCES "src/*.c")
+file(GLOB_RECURSE CC_CORE_SOURCES "src/*.c" src/worldlight.cpp)
 file(GLOB_RECURSE CC_CORE_HEADERS "include/*.h")
 
 add_library(CC-Core STATIC ${CC_CORE_SOURCES} ${CC_CORE_HEADERS})

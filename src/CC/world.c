@@ -19,7 +19,7 @@ void CC_World_Init(size_t x, size_t y, size_t z) {
     CC_GLOBAL_world_data.blocks = (block_t*)malloc(x * y * z * sizeof(block_t));
     memset(CC_GLOBAL_world_data.blocks, 0, x * y * z * sizeof(block_t));
     CC_GLOBAL_world_data.lightmap = (uint8_t*)malloc(x * y * z * sizeof(uint8_t));
-    memset(CC_GLOBAL_world_data.lightmap, 0x00FF, x * y * z * sizeof(uint8_t));
+    memset(CC_GLOBAL_world_data.lightmap, 0x00, x * y * z * sizeof(uint8_t));
 
     srand(time(NULL));
     CC_GLOBAL_world_seed = rand();
