@@ -19,7 +19,7 @@ void CC_World_Init(size_t x, size_t y, size_t z) {
     CC_GLOBAL_world_data.blocks = (block_t*)malloc(x * y * z * sizeof(block_t));
     memset(CC_GLOBAL_world_data.blocks, 0, x * y * z * sizeof(block_t));
     CC_GLOBAL_world_data.lightmap = (uint8_t*)malloc(x * y * z * sizeof(uint8_t));
-    memset(CC_GLOBAL_world_data.lightmap, 0x00, x * y * z * sizeof(uint8_t));
+    memset(CC_GLOBAL_world_data.lightmap, 0, x * y * z * sizeof(uint8_t));
 
     srand(time(NULL));
     CC_GLOBAL_world_seed = rand();
@@ -33,7 +33,6 @@ void CC_World_Init(size_t x, size_t y, size_t z) {
     FNL_GLOBAL_state.octaves = 3;
     FNL_GLOBAL_state.lacunarity = 2.0f;
     FNL_GLOBAL_state.gain = 0.5f;
-
 }
 
 void CC_World_Term(void) {
@@ -193,6 +192,15 @@ void CC_World_Generate(void) {
                 }
             }
         }
+    }
+
+
+    for(x = 0; x < CC_GLOBAL_world_data.x; x++) {
+	for (z = 0; z < CC_GLOBAL_world_data.z; z++) {
+	    CC_World_SetSunLightFast(x, WORLD_HEIGHT - 1, z, 15);
+	}
+	float percent = (float)x / (float)CC_GLOBAL_world_data.x * 100.0f;
+	printf("Lighting %.3f%%\n", percent);
     }
 
     free(noiseMap);

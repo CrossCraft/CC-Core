@@ -69,8 +69,10 @@ void CC_Server_Handle_PlayerDigging(void* loop, EventPacket* packet) {
 
 	if(block == BLK_Flower1) {
 		CC_World_RemoveLight(packet->data.player_place_cs.x, packet->data.player_place_cs.y, packet->data.player_place_cs.z);
+		CC_World_RemoveSunLight(packet->data.player_place_cs.x, packet->data.player_place_cs.y, packet->data.player_place_cs.z);
 	} else if(block != BLK_Air && block != BLK_Water && block != BLK_Glass && block != BLK_Leaves && block != BLK_Mushroom2 && block != BLK_Mushroom1 && block!= BLK_Flower2) {
 		CC_World_RemoveLight(packet->data.player_place_cs.x, packet->data.player_place_cs.y, packet->data.player_place_cs.z);
+		CC_World_RemoveSunLight(packet->data.player_place_cs.x, packet->data.player_place_cs.y, packet->data.player_place_cs.z);
 	}
 
         EventPacket block_change = CC_EventPacket_Create_BlockChange(packet->data.player_digging_cs.x, packet->data.player_digging_cs.y, packet->data.player_digging_cs.z, 0);
@@ -86,6 +88,7 @@ void CC_Server_Handle_PlayerBlockPlacement(void* loop, EventPacket* packet) {
 	CC_World_SetLight(packet->data.player_place_cs.x, packet->data.player_place_cs.y, packet->data.player_place_cs.z, 15);
     } else if(block != BLK_Air && block != BLK_Water && block != BLK_Glass && block != BLK_Leaves && block != BLK_Mushroom2 && block != BLK_Mushroom1 && block!= BLK_Flower2) {
 	CC_World_RemoveLight(packet->data.player_place_cs.x, packet->data.player_place_cs.y, packet->data.player_place_cs.z);
+	CC_World_RemoveSunLight(packet->data.player_place_cs.x, packet->data.player_place_cs.y, packet->data.player_place_cs.z);
     }
 
     EventPacket block_change = CC_EventPacket_Create_BlockChange(packet->data.player_place_cs.x, packet->data.player_place_cs.y, packet->data.player_place_cs.z, packet->data.player_place_cs.item_id);
