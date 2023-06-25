@@ -126,19 +126,12 @@ void CC_EventLoop_FreePacket(EventPacket packet, bool cs) {
             break;
         }
 
-        case CC_PACKET_TYPE_SPAWN_POSITION: {
-            break;
-        }
-        case CC_PACKET_TYPE_UPDATE_HEALTH: {
-            break;
-        }
-        case CC_PACKET_TYPE_PLAYER_POSITION_AND_LOOK: {
-            break;
-        }
-        case CC_PACKET_TYPE_PLAYER_DIGGING: {
-            break;
-        }
-        case CC_PACKET_TYPE_BLOCK_CHANGE: {
+        case CC_PACKET_TYPE_SPAWN_POSITION:
+        case CC_PACKET_TYPE_UPDATE_HEALTH:
+        case CC_PACKET_TYPE_PLAYER_POSITION_AND_LOOK:
+        case CC_PACKET_TYPE_PLAYER_DIGGING:
+        case CC_PACKET_TYPE_BLOCK_CHANGE:
+        case CC_PACKET_TYPE_PLAYER_BLOCK_PLACEMENT: {
             break;
         }
 
