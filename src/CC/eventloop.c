@@ -195,6 +195,30 @@ EventPacket CC_EventLoop_DeserializePacket(EventLoop* loop, uint8_t* data, size_
             break;
         }
 
+        case CC_PACKET_TYPE_PLAYER_BLOCK_PLACEMENT: {
+            if(loop->server) {
+                assert(gp->packet_content_case == GENERAL_PACKET__PACKET_CONTENT_PLAYER_BLOCK_PLACEMENT_PACKET_CS);
+                packet.data.player_place_cs.x = gp->player_place_cs->x;
+                packet.data.player_place_cs.y = gp->player_place_cs->y;
+                packet.data.player_place_cs.z = gp->player_place_cs->z;
+                packet.data.player_place_cs.face = gp->player_place_cs->face;
+                packet.data.player_place_cs.item_id = gp->player_place_cs->item_id;
+            }
+            break;
+        }
+
+        case CC_PACKET_TYPE_PLAYER_DIGGING: {
+            if(loop->server) {
+                assert(gp->packet_content_case == GENERAL_PACKET__PACKET_CONTENT_PLAYER_DIGGING_PACKET_CS);
+                packet.data.player_digging_cs.x = gp->player_digging_cs->x;
+                packet.data.player_digging_cs.y = gp->player_digging_cs->y;
+                packet.data.player_digging_cs.z = gp->player_digging_cs->z;
+                packet.data.player_digging_cs.status = gp->player_digging_cs->status;
+                packet.data.player_digging_cs.face = gp->player_digging_cs->face;
+            }
+            break;
+        }
+
         case CC_PACKET_TYPE_UPDATE_HEALTH: {
             if(!loop->server) {
                 assert(gp->packet_content_case == GENERAL_PACKET__PACKET_CONTENT_UPDATE_HEALTH_PACKET_SC);
@@ -351,6 +375,44 @@ size_t CC_EventLoop_SerializePacket(EventLoop* loop, EventPacket packet, uint8_t
                 spsc.z = packet.data.spawn_position.z;
 
                 gp.spawn_position_packet_sc = &spsc;
+                size = general_packet__get_packed_size(&gp);
+                *data = malloc(size);
+                general_packet__pack(&gp, *data);
+            }
+            break;
+        }
+
+        case CC_PACKET_TYPE_PLAYER_DIGGING: {
+            if(!loop->server) {
+                gp.packet_type = PACKET_TYPE__CC_PACKET_TYPE_PLAYER_DIGGING;
+                gp.packet_content_case = GENERAL_PACKET__PACKET_CONTENT_PLAYER_DIGGING_CS;
+                PlayerDiggingCS pdcs = PLAYER_DIGGING_CS__INIT;
+                pdcs.status = packet.data.player_digging_cs.status;
+                pdcs.x = packet.data.player_digging_cs.x;
+                pdcs.y = packet.data.player_digging_cs.y;
+                pdcs.z = packet.data.player_digging_cs.z;
+                pdcs.face = packet.data.player_digging_cs.face;
+
+                gp.player_digging_cs = &pdcs;
+                size = general_packet__get_packed_size(&gp);
+                *data = malloc(size);
+                general_packet__pack(&gp, *data);
+            }
+            break;
+        }
+
+        case CC_PACKET_TYPE_PLAYER_BLOCK_PLACEMENT: {
+            if(!loop->server) {
+                gp.packet_type = PACKET_TYPE__CC_PACKET_TYPE_PLAYER_BLOCK_PLACEMENT;
+                gp.packet_content_case = GENERAL_PACKET__PACKET_CONTENT_PLAYER_PLACE_CS;
+                PlayerPlaceCS ppcs = PLAYER_PLACE_CS__INIT;
+                ppcs.x = packet.data.player_place_cs.x;
+                ppcs.y = packet.data.player_place_cs.y;
+                ppcs.z = packet.data.player_place_cs.z;
+                ppcs.face = packet.data.player_place_cs.face;
+                ppcs.item_id = packet.data.player_place_cs.item_id;
+
+                gp.player_place_cs = &ppcs;
                 size = general_packet__get_packed_size(&gp);
                 *data = malloc(size);
                 general_packet__pack(&gp, *data);

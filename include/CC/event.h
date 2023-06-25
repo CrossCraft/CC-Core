@@ -93,6 +93,7 @@ void CC_Event_Handle_InBound_Client(void);
 CC_Event* CC_Event_Poll(void);
 
 void CC_Event_Push_SetBlock(uint16_t x, uint16_t y, uint16_t z, uint8_t mode, block_t block);
+void CC_Event_Push_PlayerUpdate(uint8_t playerID, float x, float y, float z, float pitch, float yaw, bool on_ground);
 void CC_Event_Push_DestroyEntity(uint16_t eid);
 void CC_Event_Push_EntityTeleport(uint16_t eid, float x, float y, float z, float vx, float vy, float vz, float pitch, float yaw);
 void CC_Event_Push_SpawnItem(Item item_data, float x, float y, float z, float vx, float vy, float vz);

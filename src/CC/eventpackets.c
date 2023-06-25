@@ -96,3 +96,25 @@ EventPacket CC_EventPacket_Create_UpdateHealthServer(void) {
     packet.data.update_health.health = CC_Player_GetData()->health;
     return packet;
 }
+
+EventPacket CC_EventPacket_Create_PlayerDigging(int x, int y, int z, int face, int status) {
+    EventPacket packet;
+    packet.type = CC_PACKET_TYPE_PLAYER_DIGGING;
+    packet.data.player_digging_cs.x = x;
+    packet.data.player_digging_cs.y = y;
+    packet.data.player_digging_cs.z = z;
+    packet.data.player_digging_cs.face = face;
+    packet.data.player_digging_cs.status = status;
+    return packet;
+}
+
+EventPacket CC_EventPacket_Create_PlayerPlace(int x, int y, int z, int face, int item_id) {
+    EventPacket packet;
+    packet.type = CC_PACKET_TYPE_PLAYER_BLOCK_PLACEMENT;
+    packet.data.player_place_cs.x = x;
+    packet.data.player_place_cs.y = y;
+    packet.data.player_place_cs.z = z;
+    packet.data.player_place_cs.face = face;
+    packet.data.player_place_cs.item_id = item_id;
+    return packet;
+}

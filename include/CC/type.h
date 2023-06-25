@@ -206,6 +206,8 @@ typedef enum {
     BREAK_DIG = 1,
     BREAK_ABORT = 2,
     BREAK_FINISH = 3,
+    BREAK_DROP = 4,
+    BREAK_SHOOT = 5
 } BlockBreakingStatus;
 
 /**
