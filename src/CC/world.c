@@ -199,7 +199,6 @@ void CC_World_Generate(void) {
 	for (z = 0; z < CC_GLOBAL_world_data.z; z++) {
 	    CC_World_SetSunLightFast(x, WORLD_HEIGHT - 1, z, 15);
 	}
-	float percent = (float)x / (float)CC_GLOBAL_world_data.x * 100.0f;
     }
 
     free(noiseMap);
