@@ -213,7 +213,6 @@ void CC_World_RemoveSunLight(size_t x, size_t y, size_t z) {
 
 		auto lv = wd->lightmap[CC_WIDX(nX, nY, nZ, wd)] >> 4;
 		if(lv == 0) {
-			printf("removing sun light at %zu %zu %zu\n", nX, nY, nZ	);
 			CC_World_SunLightSetCheckNeighborRemove(wd, nX, nY - 1,
 								       nZ, 16);
 		}

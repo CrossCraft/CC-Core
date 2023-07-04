@@ -3,6 +3,7 @@
 #include <CC/eventloop.h>
 #include <string.h>
 #include <CC/server.h>
+#include <CC/eventpackets.h>
 
 static EventLoop * CC_GLOBAL_event_loop = NULL;
 
@@ -31,6 +32,8 @@ void CC_Core_SetEventLoop(EventLoop * event_loop) {
 
 static float CC_GLOBAL_delta_time = 0.0f;
 
+static uint64_t CC_GLOBAL_tick = 0;
+
 void CC_Core_Update(double delta_time) {
     if(CC_GLOBAL_event_loop != NULL) {
         CC_EventLoop_Update(CC_GLOBAL_event_loop);
@@ -42,6 +45,13 @@ void CC_Core_Update(double delta_time) {
     CC_Entity_Update(delta_time);
 
     if(CC_GLOBAL_delta_time >= 0.05f) {
+	CC_GLOBAL_tick++;
+
+	if(CC_GLOBAL_event_loop != NULL) {
+	    EventPacket packet = CC_EventPacket_Create_TimeUpdate(CC_GLOBAL_tick);
+	    CC_EventLoop_PushPacketOutbound(CC_GLOBAL_event_loop, &packet);
+	}
+
         CC_Player_Update();
         CC_GLOBAL_delta_time = 0.0f;
     }

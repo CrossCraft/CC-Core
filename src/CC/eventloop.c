@@ -126,6 +126,7 @@ void CC_EventLoop_FreePacket(EventPacket packet, bool cs) {
             break;
         }
 
+	    case CC_PACKET_TYPE_TIME_UPDATE:
         case CC_PACKET_TYPE_SPAWN_POSITION:
         case CC_PACKET_TYPE_UPDATE_HEALTH:
         case CC_PACKET_TYPE_PLAYER_POSITION_AND_LOOK:
@@ -193,6 +194,14 @@ EventPacket CC_EventLoop_DeserializePacket(EventLoop* loop, uint8_t* data, size_
             }
             break;
         }
+
+	    case CC_PACKET_TYPE_TIME_UPDATE: {
+            if(!loop->server) {
+                assert(gp->packet_content_case == GENERAL_PACKET__PACKET_CONTENT_TIME_UPDATE_PACKET_SC);
+                packet.data.time_update.time = gp->time_update_packet_sc->time;
+            }
+            break;
+	    }
 
         case CC_PACKET_TYPE_PLAYER_BLOCK_PLACEMENT: {
             if(loop->server) {
@@ -461,6 +470,21 @@ size_t CC_EventLoop_SerializePacket(EventLoop* loop, EventPacket packet, uint8_t
             }
             break;
         }
+
+	    case CC_PACKET_TYPE_TIME_UPDATE: {
+	        if(loop->server) {
+                gp.packet_type = PACKET_TYPE__CC_PACKET_TYPE_TIME_UPDATE;
+                gp.packet_content_case = GENERAL_PACKET__PACKET_CONTENT_TIME_UPDATE_PACKET_SC;
+                TimeUpdatePacketSC tupsc = TIME_UPDATE_PACKET_SC__INIT;
+                tupsc.time = packet.data.time_update.time;
+
+                gp.time_update_packet_sc = &tupsc;
+                size = general_packet__get_packed_size(&gp);
+                *data = malloc(size);
+                general_packet__pack(&gp, *data);
+            }
+	        break;
+	    }
 
         case CC_PACKET_TYPE_PLAYER_POSITION_AND_LOOK: {
             if(!loop->server) {

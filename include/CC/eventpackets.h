@@ -19,6 +19,7 @@ EventPacket CC_EventPacket_Create_PlayerDigging(int x, int y, int z, int face, i
 EventPacket CC_EventPacket_Create_PlayerPlace(int x, int y, int z, int face, int item_id);
 
 EventPacket CC_EventPacket_Create_BlockChange(int x, int y, int z, int block_id);
+EventPacket CC_EventPacket_Create_TimeUpdate(int64_t ticks);
 
 #ifdef __cplusplus
 }

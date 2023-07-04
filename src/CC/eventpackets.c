@@ -88,6 +88,14 @@ EventPacket CC_EventPacket_Create_BlockChange(int x, int y, int z, int block_id)
     return packet;
 }
 
+EventPacket CC_EventPacket_Create_TimeUpdate(int64_t ticks) {
+    EventPacket packet;
+    packet.type = CC_PACKET_TYPE_TIME_UPDATE;
+    packet.data.time_update.time = ticks;
+
+    return packet;
+}
+
 EventPacket CC_EventPacket_Create_PlayerPositionAndLookServer(float x, float y, float z, float yaw, float pitch, bool on_ground) {
     EventPacket packet;
     packet.type = CC_PACKET_TYPE_PLAYER_POSITION_AND_LOOK;
