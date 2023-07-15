@@ -205,7 +205,7 @@ EventPacket CC_EventLoop_DeserializePacket(EventLoop* loop, uint8_t* data, size_
 
         case CC_PACKET_TYPE_PLAYER_BLOCK_PLACEMENT: {
             if(loop->server) {
-                assert(gp->packet_content_case == GENERAL_PACKET__PACKET_CONTENT_PLAYER_BLOCK_PLACEMENT_PACKET_CS);
+                assert(gp->packet_content_case == GENERAL_PACKET__PACKET_CONTENT_PLAYER_PLACE_CS);
                 packet.data.player_place_cs.x = gp->player_place_cs->x;
                 packet.data.player_place_cs.y = gp->player_place_cs->y;
                 packet.data.player_place_cs.z = gp->player_place_cs->z;
@@ -217,7 +217,7 @@ EventPacket CC_EventLoop_DeserializePacket(EventLoop* loop, uint8_t* data, size_
 
         case CC_PACKET_TYPE_PLAYER_DIGGING: {
             if(loop->server) {
-                assert(gp->packet_content_case == GENERAL_PACKET__PACKET_CONTENT_PLAYER_DIGGING_PACKET_CS);
+                assert(gp->packet_content_case == GENERAL_PACKET__PACKET_CONTENT_PLAYER_DIGGING_CS);
                 packet.data.player_digging_cs.x = gp->player_digging_cs->x;
                 packet.data.player_digging_cs.y = gp->player_digging_cs->y;
                 packet.data.player_digging_cs.z = gp->player_digging_cs->z;
@@ -241,7 +241,7 @@ EventPacket CC_EventLoop_DeserializePacket(EventLoop* loop, uint8_t* data, size_
 
         case CC_PACKET_TYPE_BLOCK_CHANGE: {
             if(!loop->server) {
-                assert(gp->packet_content_case == GENERAL_PACKET__PACKET_CONTENT_BLOCK_CHANGE_PACKET_SC);
+                assert(gp->packet_content_case == GENERAL_PACKET__PACKET_CONTENT_BLOCK_CHANGE_SC);
                 packet.data.block_change_sc.x = gp->block_change_sc->x;
                 packet.data.block_change_sc.y = gp->block_change_sc->y;
                 packet.data.block_change_sc.z = gp->block_change_sc->z;
